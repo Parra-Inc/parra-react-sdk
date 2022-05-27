@@ -1,4 +1,4 @@
-import { HTTPClient } from '../http/HTTPClient';
+import { HTTPClient } from '@parra/http-client';
 
 export interface AuthorizationCheckRequestBody {
   namespace: string;
@@ -228,7 +228,7 @@ export interface TenantInvitation {
   member_id?: string | null;
   name: string;
   email: string;
-  code: string;
+  code?: string;
   expires_at?: string;
   accepted_at?: string | null;
 }
@@ -250,6 +250,10 @@ export interface TeamMember {
 export type TeamMemberListResponse = Array<TeamMember>;
 
 export interface AnswerData {}
+
+export interface FormResponse {}
+
+export interface Form {}
 
 export interface FeedbackMetrics {
   questions_created_this_month: number;
@@ -543,304 +547,10 @@ export interface UserInfoResponse {
 class ParraAPI {
   constructor(private http: HTTPClient, private options: { baseUrl: string }) {}
 
-  createCustomer = (body?: CreateCustomerRequestBody): Promise<Customer> => {
-    return this.http.execute(`${this.options.baseUrl}/v1/customers`, {
-      method: 'post',
-      body: JSON.stringify(body),
-      headers: {
-        'content-type': 'application/json',
-      },
-    });
-  };
-
-  updateEntitlementsForCustomerById = (
-    customer_id: string
-  ): Promise<Response> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/customers/${customer_id}/entitlements`,
-      {
-        method: 'post',
-      }
-    );
-  };
-
-  createBillingPortalSession = (
-    tenant_id: string
-  ): Promise<BillingPortalSession> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/tenants/${tenant_id}/billing-portal/sessions`,
-      {
-        method: 'post',
-      }
-    );
-  };
-
-  createCheckoutSession = (
-    body?: CreateCheckoutSessionRequestBody
-  ): Promise<CheckoutSession> => {
-    return this.http.execute(`${this.options.baseUrl}/v1/checkout/sessions`, {
-      method: 'post',
-      body: JSON.stringify(body),
-      headers: {
-        'content-type': 'application/json',
-      },
-    });
-  };
-
-  getPlansForTenantById = (tenant_id: string): Promise<TenantPlansResponse> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/tenants/${tenant_id}/plans`,
-      {
-        method: 'post',
-      }
-    );
-  };
-
-  createAudience = (body?: CreateAudienceRequestBody): Promise<Audience> => {
-    return this.http.execute(`${this.options.baseUrl}/v1/email/audiences`, {
-      method: 'post',
-      body: JSON.stringify(body),
-      headers: {
-        'content-type': 'application/json',
-      },
-    });
-  };
-
-  createSubscriberForAudienceById = (
-    audience_id: string,
-    body?: CreateSubscriberRequestBody
-  ): Promise<Response> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/email/audiences/${audience_id}/subscribers`,
-      {
-        method: 'post',
-        body: JSON.stringify(body),
-        headers: {
-          'content-type': 'application/json',
-        },
-        raw: true,
-      }
-    );
-  };
-
-  getTenantById = (tenant_id: string): Promise<Tenant> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/tenants/${tenant_id}`,
-      {
-        method: 'get',
-      }
-    );
-  };
-
-  createTenantForUserById = (
-    user_id: string,
-    body?: CreateTenantRequestBody
-  ): Promise<Tenant> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/users/${user_id}/tenants`,
-      {
-        method: 'post',
-        body: JSON.stringify(body),
-        headers: {
-          'content-type': 'application/json',
-        },
-      }
-    );
-  };
-
-  getTenantsForUserById = (user_id: string): Promise<TenantListResponse> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/users/${user_id}/tenants`,
-      {
-        method: 'get',
-      }
-    );
-  };
-
-  createApiKeyForTenantById = (
-    tenant_id: string,
-    body?: CreateApiKeyRequestBody
-  ): Promise<ApiKeyWithSecretResponse> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/tenants/${tenant_id}/api-keys`,
-      {
-        method: 'post',
-        body: JSON.stringify(body),
-        headers: {
-          'content-type': 'application/json',
-        },
-      }
-    );
-  };
-
-  getApiKeysForTenantById = (
-    tenant_id: string
-  ): Promise<ApiKeyCollectionResponse> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/tenants/${tenant_id}/api-keys`,
-      {
-        method: 'get',
-      }
-    );
-  };
-
-  deleteApiKeyForTenantById = (
-    tenant_id: string,
-    api_key_id: string
-  ): Promise<Response> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/tenants/${tenant_id}/api-keys/${api_key_id}`,
-      {
-        method: 'delete',
-      }
-    );
-  };
-
-  getTenantForApiKeyById = (api_key_id: string): Promise<Tenant> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/api-keys/${api_key_id}/tenant`,
-      {
-        method: 'get',
-      }
-    );
-  };
-
-  getInvitationsForTenantById = (
-    tenant_id: string
-  ): Promise<TenantInvitationListResponse> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/tenants/${tenant_id}/invitations`,
-      {
-        method: 'get',
-      }
-    );
-  };
-
-  createInvitationForTenantById = (
-    tenant_id: string,
-    body?: TenantInvitationRequestBody
-  ): Promise<TenantInvitation> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/tenants/${tenant_id}/invitations`,
-      {
-        method: 'post',
-        body: JSON.stringify(body),
-        headers: {
-          'content-type': 'application/json',
-        },
-      }
-    );
-  };
-
-  acceptInvitationByCode = (
-    invitation_code: string
-  ): Promise<TenantInvitation> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/invitations/${invitation_code}/accept`,
-      {
-        method: 'post',
-      }
-    );
-  };
-
-  getTeamMembersForTenantById = (
-    tenant_id: string
-  ): Promise<TeamMemberListResponse> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/tenants/${tenant_id}/team-members`,
-      {
-        method: 'get',
-      }
-    );
-  };
-
-  deleteTeamMemberForTenantById = (
-    tenant_id: string,
-    team_member_id: string
-  ): Promise<Response> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/tenants/${tenant_id}/team-members/${team_member_id}`,
-      {
-        method: 'delete',
-      }
-    );
-  };
-
-  updateTeamMemberUserForTenantById = (
-    tenant_id: string,
-    team_member_id: string
-  ): Promise<Response> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/tenants/${tenant_id}/team-members/${team_member_id}/user`,
-      {
-        method: 'post',
-      }
-    );
-  };
-
-  getCards = (): Promise<CardsResponse> => {
-    return this.http.execute(`${this.options.baseUrl}/v1/cards`, {
+  getFormById = (form_id: string): Promise<Form> => {
+    return this.http.execute(`${this.options.baseUrl}/v1/forms/${form_id}`, {
       method: 'get',
     });
-  };
-
-  createQuestion = (body?: CreateQuestionRequestBody): Promise<Question> => {
-    return this.http.execute(`${this.options.baseUrl}/v1/questions`, {
-      method: 'post',
-      body: JSON.stringify(body),
-      headers: {
-        'content-type': 'application/json',
-      },
-    });
-  };
-
-  paginateQuestions = (query?: {
-    $select?: string;
-    $top?: number;
-    $skip?: number;
-    $orderby?: string;
-    $filter?: string;
-    $expand?: string;
-    $search?: string;
-  }): Promise<QuestionCollectionResponse> => {
-    return this.http.execute(`${this.options.baseUrl}/v1/questions`, {
-      method: 'get',
-      query,
-    });
-  };
-
-  getQuestionById = (question_id: string): Promise<Question> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/questions/${question_id}`,
-      {
-        method: 'get',
-      }
-    );
-  };
-
-  updateQuestionById = (
-    question_id: string,
-    body?: UpdateQuestionRequestBody
-  ): Promise<Question> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/questions/${question_id}`,
-      {
-        method: 'put',
-        body: JSON.stringify(body),
-        headers: {
-          'content-type': 'application/json',
-        },
-      }
-    );
-  };
-
-  deleteQuestionById = (question_id: string): Promise<Response> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/questions/${question_id}`,
-      {
-        method: 'delete',
-      }
-    );
   };
 
   closeQuestionById = (question_id: string): Promise<Response> => {
@@ -859,37 +569,6 @@ class ParraAPI {
       `${this.options.baseUrl}/v1/questions/${question_id}/metrics`,
       {
         method: 'post',
-      }
-    );
-  };
-
-  answerQuestionById = (
-    question_id: string,
-    body?: AnswerQuestionBody
-  ): Promise<Response> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/questions/${question_id}/answer`,
-      {
-        method: 'put',
-        body: JSON.stringify(body),
-        headers: {
-          'content-type': 'application/json',
-        },
-        raw: true,
-      }
-    );
-  };
-
-  bulkAnswerQuestions = (body?: BulkAnswerQuestionsBody): Promise<Response> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/bulk/questions/answer`,
-      {
-        method: 'post',
-        body: JSON.stringify(body),
-        headers: {
-          'content-type': 'application/json',
-        },
-        raw: true,
       }
     );
   };
@@ -983,30 +662,9 @@ class ParraAPI {
     );
   };
 
-  checkAuthorization = (
-    body?: CheckAuthorizationRequestBody
-  ): Promise<CheckAuthorization> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/tenants/authorization/check`,
-      {
-        method: 'post',
-        body: JSON.stringify(body),
-        headers: {
-          'content-type': 'application/json',
-        },
-      }
-    );
-  };
-
   getUserInfo = (): Promise<UserInfoResponse> => {
     return this.http.execute(`${this.options.baseUrl}/v1/user-info`, {
       method: 'get',
-    });
-  };
-
-  getParraAuthToken = (): Promise<AuthToken> => {
-    return this.http.execute(`${this.options.baseUrl}/v1/parra/auth/token`, {
-      method: 'post',
     });
   };
 }
