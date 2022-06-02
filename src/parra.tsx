@@ -5,7 +5,6 @@ import {
   AuthorizationProvider,
 } from './lib/http/AuthInterceptor';
 import { HTTPClient } from './lib/http/HTTPClient';
-import { HTTPInterceptor } from './lib/http/HTTPInterceptor';
 
 interface Parra {
   api: ParraAPI;
@@ -41,20 +40,11 @@ export const ParraProvider: React.FC<PropsWithChildren<Props>> = ({
   options,
 }) => {
   const baseUrl = options?.baseUrl ?? 'https://api.parra.io';
-
-  const interceptors: HTTPInterceptor[] = [];
-
   const authInterceptor = new AuthInterceptor(authorization);
-  interceptors.push(authInterceptor);
-
-  const http = new HTTPClient(interceptors);
-
+  const http = new HTTPClient([authInterceptor]);
   const api = new ParraAPI(http, { baseUrl });
 
-  const parra: Parra = {
-    api,
-    tenantId,
-  };
-
-  return <Context.Provider value={parra as any}>{children}</Context.Provider>;
+  return (
+    <Context.Provider value={{ api, tenantId }}>{children}</Context.Provider>
+  );
 };

@@ -7,7 +7,7 @@ import {
 } from '@parra/parra-js-sdk';
 import { useState } from '@storybook/addons';
 import React, { useMemo } from 'react';
-import PoweredByParra from './PoweredByParra';
+import PoweredByParra from '../brand/PoweredByParra';
 
 function ChoiceQuestionCard({ data }: { data: ChoiceQuestionBody }) {
   return (

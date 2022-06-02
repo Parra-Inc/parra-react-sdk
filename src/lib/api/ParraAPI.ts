@@ -1,4 +1,4 @@
-import { HTTPClient } from '@parra/http-client';
+import { HTTPClient } from '../http/HTTPClient';
 
 export interface AuthorizationCheckRequestBody {
   namespace: string;
@@ -551,6 +551,23 @@ class ParraAPI {
     return this.http.execute(`${this.options.baseUrl}/v1/forms/${form_id}`, {
       method: 'get',
     });
+  };
+
+  submitFormById = (
+    form_id: string,
+    body?: FormResponse
+  ): Promise<Response> => {
+    return this.http.execute(
+      `${this.options.baseUrl}/v1/forms/${form_id}/submit`,
+      {
+        method: 'post',
+        body: JSON.stringify(body),
+        headers: {
+          'content-type': 'application/json',
+        },
+        raw: true,
+      }
+    );
   };
 
   closeQuestionById = (question_id: string): Promise<Response> => {
