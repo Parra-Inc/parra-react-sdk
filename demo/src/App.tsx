@@ -1,14 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import { Demo } from '@parra/react-sdk';
+import {
+  ParraCardView,
+  ParraProvider,
+  ParraFeedbackProvider,
+} from '@parra/react-sdk';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <Demo />
-      </header>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <ParraProvider
+          tenantId="abc123"
+          authorization={async () => 'abc123'}
+          options={{}}
+        >
+          <ParraFeedbackProvider>
+            <ParraCardView
+              cardsResponse={{ items: [] }}
+              onDismissClicked={() => {}}
+            />
+          </ParraFeedbackProvider>
+        </ParraProvider>
+      </div>
     </div>
   );
 }

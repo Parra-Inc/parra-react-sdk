@@ -33,6 +33,13 @@ interface Props {
   options?: ParraOptions;
 }
 
+export const ParraContext: React.FC<PropsWithChildren<Parra>> = ({
+  children,
+  ...props
+}) => {
+  return <Context.Provider value={props}>{children}</Context.Provider>;
+};
+
 export const ParraProvider: React.FC<PropsWithChildren<Props>> = ({
   children,
   tenantId,
@@ -45,6 +52,8 @@ export const ParraProvider: React.FC<PropsWithChildren<Props>> = ({
   const api = new ParraAPI(http, { baseUrl });
 
   return (
-    <Context.Provider value={{ api, tenantId }}>{children}</Context.Provider>
+    <ParraContext api={api} tenantId={tenantId}>
+      {children}
+    </ParraContext>
   );
 };

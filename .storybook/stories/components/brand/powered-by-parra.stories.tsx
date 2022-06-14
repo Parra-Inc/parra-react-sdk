@@ -1,5 +1,5 @@
 import React from 'react';
-import PoweredByParra from '../../../src/components/PoweredByParra';
+import PoweredByParra from '../../../../src/components/brand/PoweredByParra';
 import { Story, Meta } from '@storybook/react';
 
 const Template: Story = (args) => <PoweredByParra />;

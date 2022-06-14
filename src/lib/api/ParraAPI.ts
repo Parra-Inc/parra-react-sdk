@@ -547,6 +547,29 @@ export interface UserInfoResponse {
 class ParraAPI {
   constructor(private http: HTTPClient, private options: { baseUrl: string }) {}
 
+  createSubscriberForAudienceById = (
+    audience_id: string,
+    body?: CreateSubscriberRequestBody
+  ): Promise<Response> => {
+    return this.http.execute(
+      `${this.options.baseUrl}/v1/email/audiences/${audience_id}/subscribers`,
+      {
+        method: 'post',
+        body: JSON.stringify(body),
+        headers: {
+          'content-type': 'application/json',
+        },
+        raw: true,
+      }
+    );
+  };
+
+  getCards = (): Promise<CardsResponse> => {
+    return this.http.execute(`${this.options.baseUrl}/v1/cards`, {
+      method: 'get',
+    });
+  };
+
   getFormById = (form_id: string): Promise<Form> => {
     return this.http.execute(`${this.options.baseUrl}/v1/forms/${form_id}`, {
       method: 'get',
@@ -586,6 +609,20 @@ class ParraAPI {
       `${this.options.baseUrl}/v1/questions/${question_id}/metrics`,
       {
         method: 'post',
+      }
+    );
+  };
+
+  bulkAnswerQuestions = (body?: BulkAnswerQuestionsBody): Promise<Response> => {
+    return this.http.execute(
+      `${this.options.baseUrl}/v1/bulk/questions/answer`,
+      {
+        method: 'post',
+        body: JSON.stringify(body),
+        headers: {
+          'content-type': 'application/json',
+        },
+        raw: true,
       }
     );
   };

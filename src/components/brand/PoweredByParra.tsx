@@ -9,6 +9,7 @@ export default function PoweredByParra() {
         color: 'rgba(0, 0, 0, 0.1)',
         margin: 3,
         textDecoration: 'none',
+        textAlign: 'center',
       }}
     >
       <span

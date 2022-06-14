@@ -12,15 +12,18 @@ module.exports = {
       version: 'detect',
     },
   },
-  extends: [
-    'plugin:react/recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:react-hooks/recommended',
-  ],
+  extends: ['plugin:@typescript-eslint/recommended'],
   rules: {
     '@typescript-eslint/camelcase': 'off',
+    '@typescript-eslint/no-unused-vars': ['warn'],
+    '@typescript-eslint/no-empty-interface': [
+      'warn',
+      {
+        allowSingleExtends: false,
+      },
+    ],
   },
-  ignorePatterns: ['examples/**'],
+  ignorePatterns: ['demo/**'],
   overrides: [
     {
       files: ['*.js'],

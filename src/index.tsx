@@ -24,3 +24,5 @@ export {
   FormLoaderBaseProps,
   FormComponents,
 } from './components/form/FormComponents';
+export { default as ParraCardView } from './components/card/ParraCardView';
+export { ParraFeedbackProvider } from './components/feedback/context';
