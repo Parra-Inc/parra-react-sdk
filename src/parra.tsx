@@ -1,4 +1,9 @@
-import React, { createContext, PropsWithChildren, useContext } from 'react';
+import React, {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useMemo,
+} from 'react';
 import ParraAPI from './lib/api/ParraAPI';
 import {
   AuthInterceptor,
@@ -46,10 +51,12 @@ export const ParraProvider: React.FC<PropsWithChildren<Props>> = ({
   authorization,
   options,
 }) => {
-  const baseUrl = options?.baseUrl ?? 'https://api.parra.io';
-  const authInterceptor = new AuthInterceptor(authorization);
-  const http = new HTTPClient([authInterceptor]);
-  const api = new ParraAPI(http, { baseUrl });
+  const api = useMemo(() => {
+    const baseUrl = options?.baseUrl ?? 'https://api.parra.io';
+    const authInterceptor = new AuthInterceptor(authorization);
+    const http = new HTTPClient([authInterceptor]);
+    return new ParraAPI(http, { baseUrl });
+  }, [options?.baseUrl, authorization]);
 
   return (
     <ParraContext api={api} tenantId={tenantId}>
