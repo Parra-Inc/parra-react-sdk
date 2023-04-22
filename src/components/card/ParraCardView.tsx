@@ -270,7 +270,7 @@ const QuestionCard = ({
 
       {question.data && (
         <ChoiceQuestionCard
-          data={question.data}
+          data={question.data as any}
           answer={answer}
           onAnswerSelected={onAnswerSelected}
         />
