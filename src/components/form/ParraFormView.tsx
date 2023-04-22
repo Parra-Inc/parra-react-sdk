@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParra } from '../../parra';
 import PoweredByParra from '../brand/PoweredByParra';
-import { FormComponents } from './FormComponents';
+import { FormComponentOverrides, FormComponents } from './FormComponents';
 import {
   Form,
   FormField,
@@ -19,11 +19,63 @@ export interface FormOptions {
 export type FormSubmitHandler = (values: object) => Promise<void>;
 export type FormSuccessHandler = () => void;
 
+const defaultComponents: FormComponents = {
+  Loader: ({ loading }) => {
+    return loading ? <div>Loading...</div> : null;
+  },
+  Input: ({ name, value, onChange, disabled }) => {
+    return (
+      <div>
+        <input
+          name={name}
+          value={value}
+          onChange={onChange}
+          disabled={disabled} />
+      </div>
+    );
+  },
+  TextArea: ({ name, value, onChange, disabled }) => {
+    return (
+      <div>
+        <textarea
+          name={name}
+          value={value}
+          onChange={onChange}
+          disabled={disabled} />
+      </div>
+    );
+  },
+  Select: ({ name, value, onChange, disabled, options }) => {
+    return (
+      <div>
+        <select
+          name={name}
+          value={value}
+          onChange={onChange}
+          disabled={disabled}>
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.title}
+            </option>
+          ))}
+        </select>
+      </div>
+    )
+  },
+  Button: ({ children, onClick, disabled }) => {
+    return (
+      <button onClick={onClick} disabled={disabled}>
+        {children}
+      </button>
+    );
+  },
+}
+
 export interface Props {
   form: string | Form;
   submit: FormSubmitHandler;
   success: FormSuccessHandler;
-  Components: FormComponents;
+  Components: FormComponentOverrides;
   options?: FormOptions;
 }
 
@@ -34,6 +86,7 @@ const inputForField = ({
   disabled,
   value,
   onChange,
+  required
 }: {
   Components: FormComponents;
   field: FormField;
@@ -43,6 +96,7 @@ const inputForField = ({
   value?: any;
   onChange?: (e: any) => void;
   disabled?: boolean;
+  required?: boolean;
 }) => {
   if (field.type === 'select') {
     return (
@@ -53,6 +107,7 @@ const inputForField = ({
         value={value}
         error={error}
         onChange={onChange}
+        required={required}
         {...(field.data as FormFieldSelectData)}
       />
     );
@@ -65,6 +120,7 @@ const inputForField = ({
         value={value}
         error={error}
         onChange={onChange}
+        required={required}
         {...(field.data as FormFieldInputData)}
       />
     );
@@ -77,6 +133,7 @@ const inputForField = ({
         value={value}
         error={error}
         onChange={onChange}
+        required={required}
         {...(field.data as FormFieldTextData)}
       />
     );
@@ -90,8 +147,13 @@ export default function ParraFormView({
   options,
   submit,
   success,
-  Components,
+  Components: ComponentOverrides,
 }: Props) {
+  const Components: FormComponents = {
+    ...defaultComponents,
+    ...ComponentOverrides
+  }
+
   const { api } = useParra();
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -103,16 +165,7 @@ export default function ParraFormView({
     [loading, submitting]
   );
 
-  const handleSubmit = (e: any) => {
-    setSubmitting(true);
-
-    e.preventDefault();
-
-    if (!form) {
-      console.error(`Form is required`);
-      return;
-    }
-
+  const validateForm = async (form: Form) => {
     const newErrors = form.fields.reduce((acc, field) => {
       const value = values[field.name];
 
@@ -126,11 +179,22 @@ export default function ParraFormView({
     const hasErrors = Object.values(newErrors).length > 0;
 
     if (hasErrors) {
-      setErrors(newErrors);
+      throw newErrors
+    }
+  }
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+
+    if (!form) {
+      console.error(`Form is required`);
       return;
     }
 
-    submit(values)
+    setSubmitting(true);
+
+    validateForm(form)
+      .then(() => submit(values))
       .then(success)
       .catch((err) => {
         setErrors(err);

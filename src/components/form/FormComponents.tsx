@@ -28,6 +28,14 @@ export type FormButtonProps = {
 };
 export type FormLoaderBaseProps = { loading?: boolean };
 
+export interface FormComponentOverrides {
+  Input?: ElementType<FormInputFieldProps>;
+  TextArea?: ElementType<FormFieldTextProps>;
+  Select?: ElementType<FormSelectFieldProps>;
+  Loader?: ElementType<FormLoaderBaseProps>;
+  Button?: ElementType<FormButtonProps>;
+}
+
 export interface FormComponents {
   Input: ElementType<FormInputFieldProps>;
   TextArea: ElementType<FormFieldTextProps>;
@@ -35,3 +43,4 @@ export interface FormComponents {
   Loader: ElementType<FormLoaderBaseProps>;
   Button: ElementType<FormButtonProps>;
 }
+

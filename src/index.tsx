@@ -22,6 +22,7 @@ export {
   FormSelectFieldProps,
   FormButtonProps,
   FormLoaderBaseProps,
+  FormComponentOverrides,
   FormComponents,
 } from './components/form/FormComponents';
 export { default as ParraCardView } from './components/card/ParraCardView';

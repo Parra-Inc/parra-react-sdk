@@ -5,10 +5,10 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { AnswerData, BulkAnswerQuestionsBody } from '../../lib/api/ParraAPI';
+import { BulkAnswerQuestionsBody } from '../../lib/api/ParraAPI';
 import { useParra } from '../../parra';
 
-type SubmittableAnswer = AnswerData & { submitted?: boolean };
+type SubmittableAnswer = any & { submitted?: boolean };
 
 type Answers = { [key: string]: SubmittableAnswer };
 
@@ -22,7 +22,7 @@ export const Context = createContext<ParraFeedback>(null as any);
 
 export const useParraFeedback = () => useContext(Context);
 
-interface Props {}
+interface Props { }
 
 export const ParraFeedbackProvider: React.FC<PropsWithChildren<Props>> = ({
   children,
@@ -33,11 +33,13 @@ export const ParraFeedbackProvider: React.FC<PropsWithChildren<Props>> = ({
 
   const sync = async () => {
     // We maintain a submitted flag so we dont't submit unnecessarily
-    const answersBody: BulkAnswerQuestionsBody = Object.entries(answers)
+    const answersToSubmit = Object.entries(answers)
       .filter(([, data]) => !data.submitted)
+
+    const answersBody: BulkAnswerQuestionsBody = answersToSubmit
       .map(([questionId, data]) => {
         delete data.submitted;
-        return { question_id: questionId, data };
+        return { question_id: questionId, data: { option_id: data.id } };
       });
 
     if (!answersBody.length) {
@@ -46,8 +48,8 @@ export const ParraFeedbackProvider: React.FC<PropsWithChildren<Props>> = ({
 
     await api.bulkAnswerQuestions(answersBody);
 
-    const answersWithSubmitted = answersBody.reduce((acc, answerBody) => {
-      acc[answerBody.question_id] = { submitted: true, ...answerBody.data };
+    const answersWithSubmitted = answersToSubmit.reduce((acc, [questionId, data]) => {
+      acc[questionId] = { submitted: true, ...data };
       return acc;
     }, answers);
 
