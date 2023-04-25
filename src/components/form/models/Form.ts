@@ -9,6 +9,8 @@ export type FormFieldType = 'select' | 'input' | 'text';
 export interface FormField {
   name: string;
   required?: boolean;
+  label?: string;
+  helperText?: string;
   type: FormFieldType;
   data: FormFieldData;
 }

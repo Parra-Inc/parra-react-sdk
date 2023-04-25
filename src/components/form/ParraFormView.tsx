@@ -1,8 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, PropsWithChildren } from 'react';
 import { useParra } from '../../parra';
 import PoweredByParra from '../brand/PoweredByParra';
-import { FormComponentOverrides, FormComponents } from './FormComponents';
+import {
+  ComponentOverride,
+  FormComponentOverrides,
+  FormComponents,
+  FormFieldContainerProps,
+  OverrideFormComponents,
+} from './FormComponents';
 import {
   Form,
   FormField,
@@ -19,57 +25,87 @@ export interface FormOptions {
 export type FormSubmitHandler = (values: object) => Promise<void>;
 export type FormSuccessHandler = () => void;
 
+const FormFieldContainer: React.FC<
+  PropsWithChildren<FormFieldContainerProps>
+> = ({ children, error, helperText, label }) => {
+  return (
+    <div className="form-field-container" style={{ marginTop: 14 }}>
+      {label && <div className="label">{label}</div>}
+
+      {children}
+
+      {error && (
+        <div
+          className="error"
+          style={{ marginTop: 4, color: 'red', fontSize: '0.8em' }}
+        >
+          {error}
+        </div>
+      )}
+      {!error && helperText && (
+        <div className="helper" style={{ marginTop: 4, fontSize: '0.8em' }}>
+          {helperText}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const defaultComponents: FormComponents = {
+  FieldContainer: FormFieldContainer,
   Loader: ({ loading }) => {
     return loading ? <div>Loading...</div> : null;
   },
   Input: ({ name, value, onChange, disabled }) => {
     return (
-      <div>
-        <input
-          name={name}
-          value={value}
-          onChange={onChange}
-          disabled={disabled} />
-      </div>
+      <input
+        name={name}
+        value={value}
+        onChange={onChange}
+        disabled={disabled}
+      />
     );
   },
   TextArea: ({ name, value, onChange, disabled }) => {
     return (
-      <div>
-        <textarea
-          name={name}
-          value={value}
-          onChange={onChange}
-          disabled={disabled} />
-      </div>
+      <textarea
+        name={name}
+        value={value}
+        onChange={onChange}
+        disabled={disabled}
+      />
     );
   },
-  Select: ({ name, value, onChange, disabled, options }) => {
+  Select: ({ name, value, onChange, disabled, placeholder, options }) => {
     return (
-      <div>
-        <select
-          name={name}
-          value={value}
-          onChange={onChange}
-          disabled={disabled}>
-          {options.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.title}
-            </option>
-          ))}
-        </select>
-      </div>
-    )
+      <select name={name} value={value} onChange={onChange} disabled={disabled}>
+        <option key={'placeholder'} value={''}>
+          {placeholder || '-- Select an option --'}
+        </option>
+
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.title}
+          </option>
+        ))}
+      </select>
+    );
   },
-  Button: ({ children, onClick, disabled }) => {
+  Button: ({ title, onClick, disabled }) => {
     return (
       <button onClick={onClick} disabled={disabled}>
-        {children}
+        {title}
       </button>
     );
   },
-}
+  SubmitButton: ({ title, onClick, disabled }) => {
+    return (
+      <button type="submit" onClick={onClick} disabled={disabled}>
+        {title}
+      </button>
+    );
+  },
+};
 
 export interface Props {
   form: string | Form;
@@ -86,7 +122,7 @@ const inputForField = ({
   disabled,
   value,
   onChange,
-  required
+  required,
 }: {
   Components: FormComponents;
   field: FormField;
@@ -149,11 +185,20 @@ export default function ParraFormView({
   success,
   Components: ComponentOverrides,
 }: Props) {
+  const overrideComponents: { [key: string]: any } = {};
+
+  Object.keys(ComponentOverrides).forEach(function (key) {
+    const override = ComponentOverrides[
+      key as keyof OverrideFormComponents
+    ] as ComponentOverride<any>;
+    const comp = override.Component as any;
+    overrideComponents[key] = comp;
+  });
+
   const Components: FormComponents = {
     ...defaultComponents,
-    ...ComponentOverrides
-  }
-
+    ...(overrideComponents as any),
+  };
   const { api } = useParra();
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -179,9 +224,9 @@ export default function ParraFormView({
     const hasErrors = Object.values(newErrors).length > 0;
 
     if (hasErrors) {
-      throw newErrors
+      throw newErrors;
     }
-  }
+  };
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -243,7 +288,12 @@ export default function ParraFormView({
 
       <fieldset style={{ border: 'none', margin: 0, padding: 0 }}>
         {form.fields.map((field, index) => (
-          <div key={`field-${field.name}-${index}`} style={{ marginTop: 6 }}>
+          <Components.FieldContainer
+            key={`field-${field.name}-${index}`}
+            label={field.label}
+            error={errors[field.name]}
+            helperText={field.helperText}
+          >
             {inputForField({
               Components,
               field,
@@ -254,7 +304,7 @@ export default function ParraFormView({
               error: errors[field.name],
               disabled,
             })}
-          </div>
+          </Components.FieldContainer>
         ))}
       </fieldset>
 
@@ -272,7 +322,6 @@ export default function ParraFormView({
             <Components.Button
               disabled={disabled}
               title="Cancel"
-              variant="outlined"
               onClick={options.onCancelClicked}
             >
               Cancel
@@ -283,11 +332,9 @@ export default function ParraFormView({
           <PoweredByParra />
         </div>
         <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-          <Components.Button
+          <Components.SubmitButton
             disabled={disabled}
             title="Submit"
-            type="submit"
-            variant="contained"
             loading={submitting}
           />
         </div>
