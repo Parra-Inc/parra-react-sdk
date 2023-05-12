@@ -7,15 +7,14 @@ export {
   FormSuccessHandler,
 } from './components/form/ParraFormView';
 export {
-  Form,
-  FormFieldType,
-  FormField,
-  FormFieldData,
-  FormFieldSelectData,
-  FormFieldSelectOption,
-  FormFieldTextData,
-  FormFieldInputData,
-} from './components/form/models/Form';
+  FeedbackForm,
+  FeedbackFormField,
+  FeedbackFormFieldData,
+  FeedbackFormSelectFieldData,
+  FeedbackFormSelectFieldOption,
+  FeedbackFormTextFieldData,
+  FeedbackFormInputFieldData,
+} from './lib/api/ParraAPI';
 export {
   FormInputFieldProps,
   FormFieldTextProps,

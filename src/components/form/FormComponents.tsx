@@ -1,14 +1,16 @@
 import { ElementType, PropsWithChildren } from 'react';
 import {
-  FormFieldSelectData,
-  FormFieldTextData,
-  FormFieldInputData,
-} from './models/Form';
+  FeedbackFormSelectFieldData,
+  FeedbackFormTextFieldData,
+  FeedbackFormInputFieldData,
+} from '../../lib/api/ParraAPI';
 
 export type FormFieldContainerProps = {
   label?: string;
   error?: any;
   helperText?: string;
+  hideError?: boolean;
+  hideHelperText?: boolean;
 };
 
 export type BaseFieldProps = FormFieldContainerProps & {
@@ -19,9 +21,9 @@ export type BaseFieldProps = FormFieldContainerProps & {
   required?: boolean;
 };
 
-export type FormInputFieldProps = BaseFieldProps & FormFieldInputData;
-export type FormFieldTextProps = BaseFieldProps & FormFieldTextData;
-export type FormSelectFieldProps = BaseFieldProps & FormFieldSelectData;
+export type FormInputFieldProps = BaseFieldProps & FeedbackFormInputFieldData;
+export type FormFieldTextProps = BaseFieldProps & FeedbackFormTextFieldData;
+export type FormSelectFieldProps = BaseFieldProps & FeedbackFormSelectFieldData;
 export type FormButtonProps = {
   title: string;
   loading?: boolean;

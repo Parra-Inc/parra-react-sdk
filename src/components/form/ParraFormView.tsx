@@ -10,12 +10,12 @@ import {
   OverrideFormComponents,
 } from './FormComponents';
 import {
-  Form,
-  FormField,
-  FormFieldSelectData,
-  FormFieldTextData,
-  FormFieldInputData,
-} from './models/Form';
+  FeedbackForm,
+  FeedbackFormField,
+  FeedbackFormSelectFieldData,
+  FeedbackFormTextFieldData,
+  FeedbackFormInputFieldData,
+} from '../../lib/api/ParraAPI';
 
 export interface FormOptions {
   showCancel?: boolean;
@@ -27,14 +27,14 @@ export type FormSuccessHandler = () => void;
 
 const FormFieldContainer: React.FC<
   PropsWithChildren<FormFieldContainerProps>
-> = ({ children, error, helperText, label }) => {
+> = ({ children, error, helperText, label, hideError, hideHelperText }) => {
   return (
     <div className="form-field-container" style={{ marginTop: 14 }}>
       {label && <div className="label">{label}</div>}
 
       {children}
 
-      {error && (
+      {!hideError && error && (
         <div
           className="error"
           style={{ marginTop: 4, color: 'red', fontSize: '0.8em' }}
@@ -42,7 +42,7 @@ const FormFieldContainer: React.FC<
           {error}
         </div>
       )}
-      {!error && helperText && (
+      {!error && !hideHelperText && helperText && (
         <div className="helper" style={{ marginTop: 4, fontSize: '0.8em' }}>
           {helperText}
         </div>
@@ -108,7 +108,7 @@ const defaultComponents: FormComponents = {
 };
 
 export interface Props {
-  form: string | Form;
+  form: string | FeedbackForm;
   submit: FormSubmitHandler;
   success: FormSuccessHandler;
   Components: FormComponentOverrides;
@@ -125,8 +125,8 @@ const inputForField = ({
   required,
 }: {
   Components: FormComponents;
-  field: FormField;
-  form: Form;
+  field: FeedbackFormField;
+  form: FeedbackForm;
   options?: FormOptions;
   error?: any;
   value?: any;
@@ -144,7 +144,9 @@ const inputForField = ({
         error={error}
         onChange={onChange}
         required={required}
-        {...(field.data as FormFieldSelectData)}
+        label={field.title}
+        helperText={field.helper_text}
+        {...(field.data as FeedbackFormSelectFieldData)}
       />
     );
   } else if (field.type === 'input') {
@@ -157,7 +159,9 @@ const inputForField = ({
         error={error}
         onChange={onChange}
         required={required}
-        {...(field.data as FormFieldInputData)}
+        label={field.title}
+        helperText={field.helper_text}
+        {...(field.data as FeedbackFormInputFieldData)}
       />
     );
   } else if (field.type === 'text') {
@@ -170,7 +174,9 @@ const inputForField = ({
         error={error}
         onChange={onChange}
         required={required}
-        {...(field.data as FormFieldTextData)}
+        label={field.title}
+        helperText={field.helper_text}
+        {...(field.data as FeedbackFormTextFieldData)}
       />
     );
   } else {
@@ -202,7 +208,7 @@ export default function ParraFormView({
   const { api } = useParra();
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [form, setForm] = useState<Form>();
+  const [form, setForm] = useState<FeedbackForm>();
   const [values, setValues] = useState<any>({});
   const [errors, setErrors] = useState<any>({});
   const disabled: boolean = useMemo(
@@ -210,8 +216,8 @@ export default function ParraFormView({
     [loading, submitting]
   );
 
-  const validateForm = async (form: Form) => {
-    const newErrors = form.fields.reduce((acc, field) => {
+  const validateForm = async (form: FeedbackForm) => {
+    const newErrors = form.data.fields.reduce((acc, field) => {
       const value = values[field.name];
 
       if (field.required && !value) {
@@ -249,7 +255,7 @@ export default function ParraFormView({
       });
   };
 
-  const handleChange = (e: any, field: FormField) => {
+  const handleChange = (e: any, field: FeedbackFormField) => {
     setValues((v: any) => {
       return {
         ...v,
@@ -266,7 +272,7 @@ export default function ParraFormView({
 
       api
         .getFormById(formProvider)
-        .then((form) => setForm(form as Form))
+        .then((form) => setForm(form))
         .catch(console.error)
         .finally(() => setLoading(false));
     }
@@ -282,17 +288,19 @@ export default function ParraFormView({
 
   return (
     <form onSubmit={handleSubmit}>
-      <h1 style={{ marginTop: 0, marginBottom: 8 }}>{form.title}</h1>
+      <h1 style={{ marginTop: 0, marginBottom: 8 }}>{form.data.title}</h1>
 
-      {form.description && <p style={{ marginTop: 8 }}>{form.description}</p>}
+      {form.data.description && (
+        <p style={{ marginTop: 8 }}>{form.data.description}</p>
+      )}
 
       <fieldset style={{ border: 'none', margin: 0, padding: 0 }}>
-        {form.fields.map((field, index) => (
+        {form.data.fields.map((field, index) => (
           <Components.FieldContainer
             key={`field-${field.name}-${index}`}
-            label={field.label}
+            label={field.title}
             error={errors[field.name]}
-            helperText={field.helperText}
+            helperText={field.helper_text}
           >
             {inputForField({
               Components,

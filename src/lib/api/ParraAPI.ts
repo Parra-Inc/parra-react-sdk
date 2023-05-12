@@ -522,7 +522,7 @@ export interface FeedbackForm {
   created_at: string;
   updated_at: string;
   deleted_at?: string | null;
-  data?: FeedbackFormData;
+  data: FeedbackFormData;
 }
 
 export interface FeedbackFormData {
@@ -534,6 +534,7 @@ export interface FeedbackFormData {
 export interface FeedbackFormField {
   name: string;
   title?: string;
+  helper_text?: string;
   type: string;
   required?: boolean;
   data: FeedbackFormFieldData;
@@ -541,18 +542,25 @@ export interface FeedbackFormField {
 
 export type FeedbackFormFieldData =
   | FeedbackFormTextFieldData
-  | FeedbackFormTextFieldData;
+  | FeedbackFormSelectFieldData
+  | FeedbackFormInputFieldData;
 
 export interface FeedbackFormTextFieldData {
   placeholder?: string;
+  lines?: number;
   max_lines?: number;
   min_characters?: number;
   max_characters?: number;
+  max_height?: number;
 }
 
-export interface FeedbackFormTextFieldData {
+export interface FeedbackFormInputFieldData {
   placeholder?: string;
-  options?: Array<FeedbackFormSelectFieldOption>;
+}
+
+export interface FeedbackFormSelectFieldData {
+  placeholder?: string;
+  options: Array<FeedbackFormSelectFieldOption>;
 }
 
 export interface FeedbackFormSelectFieldOption {
@@ -1253,7 +1261,7 @@ class ParraAPI {
     });
   };
 
-  getFormById = (feedback_form_id: string): Promise<FeedbackFormResponse> => {
+  getFormById = (feedback_form_id: string): Promise<FeedbackForm> => {
     return this.http.execute(
       `${this.options.baseUrl}/v1/feedback/forms/${feedback_form_id}`,
       {
