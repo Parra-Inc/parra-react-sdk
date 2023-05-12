@@ -321,8 +321,7 @@ export default function ParraFormView({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          marginTop: 20,
-          marginBottom: 12,
+          marginTop: 10,
         }}
       >
         <div style={{ flex: 1 }}>
