@@ -8,6 +8,8 @@ import {
   FormComponents,
   FormFieldContainerProps,
   OverrideFormComponents,
+  FeedbackFormTitleProps,
+  FeedbackFormDescriptionProps,
 } from './FormComponents';
 import {
   FeedbackForm,
@@ -24,6 +26,22 @@ export interface FormOptions {
 
 export type FormSubmitHandler = (values: object) => Promise<void>;
 export type FormSuccessHandler = () => void;
+
+const Title = ({ title }: FeedbackFormTitleProps) => {
+  return (
+    <h1 className="title" style={{ marginTop: 0, marginBottom: 8 }}>
+      {title}
+    </h1>
+  );
+};
+
+const Description = ({ description }: FeedbackFormDescriptionProps) => {
+  return (
+    <p className="description" style={{ marginTop: 8 }}>
+      {description}
+    </p>
+  );
+};
 
 const FormFieldContainer: React.FC<
   PropsWithChildren<FormFieldContainerProps>
@@ -52,6 +70,8 @@ const FormFieldContainer: React.FC<
 };
 
 const defaultComponents: FormComponents = {
+  Title: Title,
+  Description: Description,
   FieldContainer: FormFieldContainer,
   Loader: ({ loading }) => {
     return loading ? <div>Loading...</div> : null;
@@ -113,6 +133,7 @@ export interface Props {
   success: FormSuccessHandler;
   Components: FormComponentOverrides;
   options?: FormOptions;
+  preview?: boolean;
 }
 
 const inputForField = ({
@@ -137,6 +158,7 @@ const inputForField = ({
   if (field.type === 'select') {
     return (
       <Components.Select
+        field={field}
         key={field.name}
         name={field.name}
         disabled={disabled}
@@ -152,6 +174,7 @@ const inputForField = ({
   } else if (field.type === 'input') {
     return (
       <Components.Input
+        field={field}
         key={field.name}
         name={field.name}
         disabled={disabled}
@@ -167,6 +190,7 @@ const inputForField = ({
   } else if (field.type === 'text') {
     return (
       <Components.TextArea
+        field={field}
         key={field.name}
         name={field.name}
         disabled={disabled}
@@ -198,7 +222,10 @@ export default function ParraFormView({
       key as keyof OverrideFormComponents
     ] as ComponentOverride<any>;
     const comp = override.Component as any;
-    overrideComponents[key] = comp;
+
+    if (comp) {
+      overrideComponents[key] = comp;
+    }
   });
 
   const Components: FormComponents = {
@@ -287,16 +314,17 @@ export default function ParraFormView({
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h1 style={{ marginTop: 0, marginBottom: 8 }}>{form.data.title}</h1>
+    <form className="parra-feedback-form" onSubmit={handleSubmit}>
+      <Components.Title title={form.data.title} />
 
       {form.data.description && (
-        <p style={{ marginTop: 8 }}>{form.data.description}</p>
+        <Components.Description description={form.data.description} />
       )}
 
       <fieldset style={{ border: 'none', margin: 0, padding: 0 }}>
         {form.data.fields.map((field, index) => (
           <Components.FieldContainer
+            field={field}
             key={`field-${field.name}-${index}`}
             label={field.title}
             error={errors[field.name]}

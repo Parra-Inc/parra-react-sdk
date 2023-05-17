@@ -3,14 +3,27 @@ import {
   FeedbackFormSelectFieldData,
   FeedbackFormTextFieldData,
   FeedbackFormInputFieldData,
+  FeedbackFormField,
 } from '../../lib/api/ParraAPI';
 
-export type FormFieldContainerProps = {
+export interface FeedbackFormTitleProps {
+  title: string;
+}
+
+export interface FeedbackFormDescriptionProps {
+  description: string;
+}
+
+export type FormFieldContainerOverridableProps = {
+  hideError?: boolean;
+  hideHelperText?: boolean;
+};
+
+export type FormFieldContainerProps = FormFieldContainerOverridableProps & {
+  field: FeedbackFormField;
   label?: string;
   error?: any;
   helperText?: string;
-  hideError?: boolean;
-  hideHelperText?: boolean;
 };
 
 export type BaseFieldProps = FormFieldContainerProps & {
@@ -38,6 +51,8 @@ export type ComponentOverride<ComponentType, PropType = ComponentType> = {
 };
 
 export interface FormComponentOverrides {
+  Title?: ComponentOverride<FeedbackFormTitleProps>;
+  Description?: ComponentOverride<FeedbackFormDescriptionProps>;
   Input?: ComponentOverride<FormInputFieldProps>;
   TextArea?: ComponentOverride<FormFieldTextProps>;
   Select?: ComponentOverride<FormSelectFieldProps>;
@@ -46,11 +61,13 @@ export interface FormComponentOverrides {
   SubmitButton?: ComponentOverride<FormButtonProps>;
   FieldContainer?: ComponentOverride<
     PropsWithChildren<FormFieldContainerProps>,
-    FormFieldContainerProps
+    FormFieldContainerOverridableProps
   >;
 }
 
 export interface OverrideFormComponents {
+  Title?: ElementType<FeedbackFormTitleProps>;
+  Description?: ElementType<FeedbackFormDescriptionProps>;
   Input?: ElementType<FormInputFieldProps>;
   TextArea?: ElementType<FormFieldTextProps>;
   Select?: ElementType<FormSelectFieldProps>;
@@ -61,6 +78,8 @@ export interface OverrideFormComponents {
 }
 
 export interface FormComponents {
+  Title: ElementType<FeedbackFormTitleProps>;
+  Description: ElementType<FeedbackFormDescriptionProps>;
   Input: ElementType<FormInputFieldProps>;
   TextArea: ElementType<FormFieldTextProps>;
   Select: ElementType<FormSelectFieldProps>;

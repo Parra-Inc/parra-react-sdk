@@ -490,6 +490,12 @@ export interface CampaignAction {
 
 export type CampaignActionList = Array<CampaignAction>;
 
+export interface UpdateFeedbackFormRequestBody {
+  title: string;
+  description?: string | null;
+  data: FeedbackFormData;
+}
+
 export interface CreateFeedbackFormRequestBody {
   title: string;
   description?: string | null;
@@ -507,6 +513,24 @@ export interface FeedbackFormStub {
 
 export interface SubmitFeedbackFormResponseBody {}
 
+export interface FeedbackFormSubmission {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string | null;
+  feedback_form_id: string;
+  user_id: string;
+  data: SubmitFeedbackFormResponseBody;
+}
+
+export interface FeedbackFormSubmissionCollectionResponse {
+  page: number;
+  page_count: number;
+  page_size: number;
+  total_count: number;
+  data: Array<FeedbackFormSubmission>;
+}
+
 export interface FeedbackFormResponse {
   id: string;
   created_at: string;
@@ -517,7 +541,7 @@ export interface FeedbackFormResponse {
   data: FeedbackFormData;
 }
 
-export interface FeedbackForm {
+export interface FeedbackFormDataStub {
   id: string;
   created_at: string;
   updated_at: string;
@@ -1261,7 +1285,7 @@ class ParraAPI {
     });
   };
 
-  getFormById = (feedback_form_id: string): Promise<FeedbackForm> => {
+  getFormById = (feedback_form_id: string): Promise<FeedbackFormDataStub> => {
     return this.http.execute(
       `${this.options.baseUrl}/v1/feedback/forms/${feedback_form_id}`,
       {
