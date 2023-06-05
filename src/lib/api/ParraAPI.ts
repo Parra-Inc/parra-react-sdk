@@ -238,6 +238,41 @@ export interface UpdateTenantMetricsRequestBody {
   user_count?: number;
 }
 
+export interface CreateTenantUserRequestBody {
+  identity: string;
+  name?: string | null;
+  properties?: Map<string, any> | null;
+}
+
+export interface TenantUserStub {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string | null;
+  tenant_id: string;
+  identity: string;
+  name?: string | null;
+}
+
+export interface TenantUser {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string | null;
+  tenant_id: string;
+  identity: string;
+  name?: string | null;
+  properties: Map<string, any>;
+}
+
+export interface TenantUserCollectionResponse {
+  page: number;
+  page_count: number;
+  page_size: number;
+  total_count: number;
+  data: Array<TenantUserStub>;
+}
+
 export interface CreateApiKeyRequestBody {
   name: string;
   description?: string | null;
@@ -1101,33 +1136,78 @@ export interface TemplateTagCollectionResponse {
   metadata?: TemplateTagCollectionMetadata;
 }
 
-export interface TenantUserStub {
+export interface UpdateApplicationRequestBody {
+  name: string;
+  description?: string | null;
+}
+
+export interface CreateApplicationRequestBody {
+  name: string;
+  description?: string | null;
+  type: ApplicationType;
+}
+
+export enum ApplicationType {
+  ios = 'ios',
+}
+
+export interface Application {
   id: string;
   created_at: string;
   updated_at: string;
   deleted_at?: string | null;
-  identity: string;
+  name: string;
+  description?: string | null;
+  type: ApplicationType;
   tenant_id: string;
-  name?: string | null;
+  apns?: ApnsConfiguration | null;
 }
 
-export interface TenantUser {
-  id: string;
-  created_at: string;
-  updated_at: string;
-  deleted_at?: string | null;
-  identity: string;
-  tenant_id: string;
-  name?: string | null;
-  properties: Map<string, any>;
-}
-
-export interface TenantUserCollectionResponse {
+export interface ApplicationCollectionResponse {
   page: number;
   page_count: number;
   page_size: number;
   total_count: number;
-  data: Array<TenantUserStub>;
+  data: Array<Application>;
+}
+
+export type ApplicationListResponse = Array<Application>;
+
+export enum ApnsConfigurationEnvironment {
+  production = 'production',
+  sandbox = 'sandbox',
+}
+
+export interface UpdateApnsConfigurationRequestBody {
+  environment: ApnsConfigurationEnvironment;
+  name: string;
+  description?: string | null;
+  team_id: string;
+  key_id: string;
+  key: string;
+}
+
+export interface ApnsConfiguration {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string | null;
+  environment: ApnsConfigurationEnvironment;
+  name: string;
+  description?: string | null;
+  team_id: string;
+  key_id: string;
+  key: string;
+}
+
+export interface CreateDeviceRequestBody {
+  platform: string;
+  platform_agent: string;
+  device_id?: string | null;
+  bundle_id?: string | null;
+  ad_id?: string | null;
+  manufacturer?: string | null;
+  model?: string | null;
 }
 
 export interface NotificationRecipient {
@@ -1187,8 +1267,10 @@ export interface ReadNotificationsRequestBody {
 }
 
 export interface CreatePushTokenRequestBody {
-  user_id?: string;
-  apns_token: string;
+  application_id: string;
+  type: string;
+  token: string;
+  device: CreateDeviceRequestBody;
 }
 
 export interface UserResponse {
@@ -1255,7 +1337,9 @@ export interface CheckAuthorization {
 }
 
 export interface UserInfoResponse {
+  roles?: Array<string>;
   user?: UserResponse | null;
+  tenant_user?: TenantUser | null;
 }
 
 class ParraAPI {

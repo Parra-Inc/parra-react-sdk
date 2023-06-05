@@ -5,7 +5,7 @@ export {
   FormOptions,
   FormSubmitHandler,
   FormSuccessHandler,
-} from './components/form/ParraFormView';
+} from './components/feedback-forms/ParraFormView';
 export {
   FeedbackForm,
   FeedbackFormField,
@@ -23,6 +23,6 @@ export {
   FormLoaderBaseProps,
   FormComponentOverrides,
   FormComponents,
-} from './components/form/FormComponents';
+} from './components/feedback-forms/FormComponents';
 export { default as ParraCardView } from './components/card/ParraCardView';
 export { ParraFeedbackProvider } from './components/feedback/context';

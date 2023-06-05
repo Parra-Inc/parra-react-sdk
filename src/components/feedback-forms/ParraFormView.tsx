@@ -12,7 +12,7 @@ import {
   FeedbackFormDescriptionProps,
 } from './FormComponents';
 import {
-  FeedbackForm,
+  FeedbackFormDataStub,
   FeedbackFormField,
   FeedbackFormSelectFieldData,
   FeedbackFormTextFieldData,
@@ -128,7 +128,7 @@ const defaultComponents: FormComponents = {
 };
 
 export interface Props {
-  form: string | FeedbackForm;
+  form: string | FeedbackFormDataStub;
   submit: FormSubmitHandler;
   success: FormSuccessHandler;
   Components: FormComponentOverrides;
@@ -147,7 +147,7 @@ const inputForField = ({
 }: {
   Components: FormComponents;
   field: FeedbackFormField;
-  form: FeedbackForm;
+  form: FeedbackFormDataStub;
   options?: FormOptions;
   error?: any;
   value?: any;
@@ -235,7 +235,7 @@ export default function ParraFormView({
   const { api } = useParra();
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [form, setForm] = useState<FeedbackForm>();
+  const [form, setForm] = useState<FeedbackFormDataStub>();
   const [values, setValues] = useState<any>({});
   const [errors, setErrors] = useState<any>({});
   const disabled: boolean = useMemo(
@@ -243,7 +243,7 @@ export default function ParraFormView({
     [loading, submitting]
   );
 
-  const validateForm = async (form: FeedbackForm) => {
+  const validateForm = async (form: FeedbackFormDataStub) => {
     const newErrors = form.data.fields.reduce((acc, field) => {
       const value = values[field.name];
 
