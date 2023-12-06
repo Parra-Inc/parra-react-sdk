@@ -1,5 +1,5 @@
 import React from 'react';
-
+import PoweredByParraSvg from '../assets/svgs/PoweredByParra';
 export default function PoweredByParra() {
   return (
     <a
@@ -12,6 +12,7 @@ export default function PoweredByParra() {
         textAlign: 'center',
       }}
     >
+      <PoweredByParraSvg />
       <span
         style={{
           fontSize: 8,

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect, useMemo, PropsWithChildren } from 'react';
+import clsx from 'clsx';
 import { useParra } from '../../parra';
 import PoweredByParra from '../brand/PoweredByParra';
 import {
@@ -128,6 +129,8 @@ const defaultComponents: FormComponents = {
 };
 
 export interface Props {
+  className?: string;
+  buttonBarClassName?: string;
   form: string | FeedbackFormDataStub;
   submit: FormSubmitHandler;
   success: FormSuccessHandler;
@@ -209,6 +212,8 @@ const inputForField = ({
 };
 
 export default function ParraFormView({
+  className,
+  buttonBarClassName,
   form: formProvider,
   options,
   submit,
@@ -314,7 +319,10 @@ export default function ParraFormView({
   }
 
   return (
-    <form className="parra-feedback-form" onSubmit={handleSubmit}>
+    <form
+      className={clsx('parra-feedback-form', className)}
+      onSubmit={handleSubmit}
+    >
       <Components.Title title={form.data.title} />
 
       {form.data.description && (
@@ -345,6 +353,7 @@ export default function ParraFormView({
       </fieldset>
 
       <div
+        className={clsx('parra-feedback-form-button-bar', buttonBarClassName)}
         style={{
           display: 'flex',
           alignItems: 'center',

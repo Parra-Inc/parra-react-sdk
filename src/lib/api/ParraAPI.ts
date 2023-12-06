@@ -29,7 +29,7 @@ export interface AuthorizationCheckRequestBody {
   namespace: string;
   subject: string;
   scope: string;
-  context?: Map<string, any>;
+  context?: object;
 }
 
 export interface AuthorizationCheck {
@@ -80,7 +80,7 @@ export interface Price {
 export interface UnitPrice {
   currency: Currency;
   amount: number;
-  interval?: Interval;
+  interval: Interval;
 }
 
 export interface Plan {
@@ -210,6 +210,19 @@ export interface Tenant {
   metrics?: TenantMetrics | null;
 }
 
+export interface TenantMember {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string | null;
+  name: string;
+  is_test: boolean;
+  parent_tenant_id?: string | null;
+  entitlements?: Array<Entitlement> | null;
+  metrics?: TenantMetrics | null;
+  scopes: Array<string>;
+}
+
 export type TenantListResponse = Array<Tenant>;
 
 export interface TenantCollectionResponse {
@@ -241,7 +254,7 @@ export interface UpdateTenantMetricsRequestBody {
 export interface CreateTenantUserRequestBody {
   identity: string;
   name?: string | null;
-  properties?: Map<string, any> | null;
+  properties?: object | null;
 }
 
 export interface TenantUserStub {
@@ -262,7 +275,7 @@ export interface TenantUser {
   tenant_id: string;
   identity: string;
   name?: string | null;
-  properties: Map<string, any>;
+  properties: object;
 }
 
 export interface TenantUserCollectionResponse {
@@ -496,6 +509,7 @@ export type CampaignTriggerList = Array<CampaignTrigger>;
 
 export enum CampaignActionType {
   question = 'question',
+  notification = 'notification',
 }
 
 export enum CampaignActionDisplayType {
@@ -505,6 +519,7 @@ export enum CampaignActionDisplayType {
 
 export interface UpdateCampaignActionRequestBody {
   type: CampaignActionType;
+  notification_template_id?: string;
   question_id?: string;
   display_type?: CampaignActionDisplayType | null;
   app_area_id?: string | null;
@@ -518,6 +533,7 @@ export interface CampaignAction {
   updated_at: string;
   deleted_at?: string | null;
   type: CampaignActionType;
+  notification_template_id?: string;
   question_id?: string;
   display_type?: CampaignActionDisplayType | null;
   app_area_id?: string | null;
@@ -590,11 +606,17 @@ export interface FeedbackFormData {
   fields: Array<FeedbackFormField>;
 }
 
+export enum FeedbackFormFieldType {
+  text = 'text',
+  input = 'input',
+  select = 'select',
+}
+
 export interface FeedbackFormField {
   name: string;
   title?: string;
   helper_text?: string;
-  type: string;
+  type: FeedbackFormFieldType;
   required?: boolean;
   data: FeedbackFormFieldData;
 }
@@ -1040,13 +1062,13 @@ export interface BooleanQuestionMetricsOption {
 export interface Event {
   name: string;
   created_at: string | null;
-  metadata?: Map<string, any> | null;
+  metadata?: object | null;
 }
 
 export interface Session {
   started_at?: string | null;
   ended_at?: string | null;
-  user_properties?: Map<string, any> | null;
+  user_properties?: object | null;
   events?: Array<Event>;
 }
 
@@ -1173,15 +1195,103 @@ export interface ApplicationCollectionResponse {
 
 export type ApplicationListResponse = Array<Application>;
 
-export enum ApnsConfigurationEnvironment {
+export enum ApnsEnvironment {
   production = 'production',
   sandbox = 'sandbox',
 }
 
+export enum ApnsPushType {
+  alert = 'alert',
+  background = 'background',
+  complication = 'complication',
+  fileprovider = 'fileprovider',
+  liveactivity = 'liveactivity',
+  location = 'location',
+  pushtotalk = 'pushtotalk',
+  voip = 'voip',
+  mdm = 'mdm',
+}
+
+export interface UpdateApnsChannelRequestBody {
+  application_id: string;
+  environment: ApnsEnvironment;
+  push_type: ApnsPushType;
+  expiration?: string | null;
+  collapse_id?: string | null;
+  priority?: number;
+  payload: object;
+}
+
+export interface CreateApnsChannelRequestBody {
+  application_id: string;
+  environment: ApnsEnvironment;
+  push_type: ApnsPushType;
+  expiration?: string | null;
+  collapse_id?: string | null;
+  priority?: number;
+  payload: object;
+}
+
+export interface ApnsChannel {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string | null;
+  application_id: string;
+  environment: ApnsEnvironment;
+  push_type: ApnsPushType;
+  expiration?: string | null;
+  collapse_id?: string | null;
+  priority?: number;
+  payload: object;
+}
+
+export interface UpdateInboxChannelRequestBody {
+  title: string;
+  description?: string | null;
+}
+
+export interface CreateInboxChannelRequestBody {
+  title: string;
+  description?: string | null;
+}
+
+export interface InboxChannel {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string | null;
+  title: string;
+  description?: string | null;
+}
+
+export interface InboxItem {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string | null;
+  title: string;
+  description?: string;
+  read: boolean;
+  read_at?: string | null;
+}
+
+export interface ReadInboxItemsRequestBody {
+  item_ids: Array<string>;
+}
+
+export interface InboxItemCollectionResponse {
+  page: number;
+  page_count: number;
+  page_size: number;
+  total_count: number;
+  data: Array<InboxItem>;
+}
+
 export interface UpdateApnsConfigurationRequestBody {
-  environment: ApnsConfigurationEnvironment;
   name: string;
   description?: string | null;
+  bundle_id: string;
   team_id: string;
   key_id: string;
   key: string;
@@ -1192,12 +1302,44 @@ export interface ApnsConfiguration {
   created_at: string;
   updated_at: string;
   deleted_at?: string | null;
-  environment: ApnsConfigurationEnvironment;
   name: string;
   description?: string | null;
+  bundle_id: string;
   team_id: string;
   key_id: string;
   key: string;
+}
+
+export enum ChannelType {
+  apns = 'apns',
+  inbox = 'inbox',
+}
+
+export interface UpdateChannelRequestBody {
+  name: string;
+  description?: string | null;
+  apns?: UpdateApnsChannelRequestBody;
+  inbox?: UpdateInboxChannelRequestBody;
+}
+
+export interface CreateChannelRequestBody {
+  type: ChannelType;
+  name: string;
+  description?: string | null;
+  apns?: CreateApnsChannelRequestBody;
+  inbox?: CreateInboxChannelRequestBody;
+}
+
+export interface Channel {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string | null;
+  type: ChannelType;
+  name: string;
+  description?: string | null;
+  apns?: CreateApnsChannelRequestBody;
+  inbox?: CreateInboxChannelRequestBody;
 }
 
 export interface CreateDeviceRequestBody {
@@ -1210,67 +1352,67 @@ export interface CreateDeviceRequestBody {
   model?: string | null;
 }
 
-export interface NotificationRecipient {
-  user_id?: string | null;
+export interface UpdateNotificationTemplateRequestBody {
+  name: string;
+  description?: string | null;
 }
 
-export interface CreateNotificationRequestBody {
-  type?: string;
-  title: string;
-  subtitle?: string | null;
-  body?: string | null;
-  image_url?: string | null;
-  data?: Map<string, any> | null;
-  action?: Map<string, any> | null;
-  deduplication_id?: string | null;
-  group_id?: string | null;
-  visible?: boolean;
-  silent?: boolean;
-  content_available?: boolean;
-  expires_at?: string | null;
-  recipients: Array<NotificationRecipient>;
+export interface CreateNotificationTemplateRequestBody {
+  name: string;
+  description?: string | null;
 }
 
-export interface NotificationResponse {
-  type?: string;
-  title: string;
-  subtitle?: string | null;
-  body?: string | null;
-  image_url?: string | null;
-  data?: Map<string, any> | null;
-  action?: Map<string, any> | null;
-  deduplication_id?: string | null;
-  group_id?: string | null;
-  visible?: boolean;
-  silent?: boolean;
-  content_available?: boolean;
-  expires_at?: string | null;
-  user_id?: string | null;
+export interface NotificationTemplate {
   id: string;
   created_at: string;
   updated_at: string;
-  deleted_at: string | null;
-  viewed_at?: string | null;
-  version?: string;
+  deleted_at?: string | null;
+  name: string;
+  description?: string | null;
+  tenant_id: string;
+  channels?: Array<Channel> | null;
 }
 
-export interface NotificationCollectionResponse {
+export interface NotificationTemplateCollectionResponse {
   page: number;
   page_count: number;
   page_size: number;
   total_count: number;
-  data: Array<NotificationResponse>;
+  data: Array<NotificationTemplate>;
 }
 
-export interface ReadNotificationsRequestBody {
-  notification_ids: Array<string>;
+export type NotificationTemplateListResponse = Array<NotificationTemplate>;
+
+export interface NotificationRecipient {
+  user_id?: string;
+  data?: object | null;
+}
+
+export interface SendNotificationApnsChannelOverrides {
+  expiration?: string | null;
+  collapse_id?: string | null;
+  priority?: number;
+}
+
+export interface SendNotificationInboxChannelOverrides {
+  title?: string;
+  description?: string | null;
+}
+
+export interface SendNotificationChannels {
+  apns?: SendNotificationApnsChannelOverrides;
+  inbox?: SendNotificationInboxChannelOverrides;
+}
+
+export interface SendNotificationForTemplateRequestBody {
+  recipients: Array<NotificationRecipient>;
+  data?: object | null;
+  channels?: SendNotificationChannels;
 }
 
 export interface CreatePushTokenRequestBody {
-  application_id: string;
   type: string;
   token: string;
-  device: CreateDeviceRequestBody;
 }
 
 export interface UserResponse {
@@ -1380,7 +1522,7 @@ class ParraAPI {
 
   submitFormById = (
     feedback_form_id: string,
-    body?: FeedbackFormResponse
+    body?: SubmitFeedbackFormResponseBody
   ): Promise<Response> => {
     return this.http.execute(
       `${this.options.baseUrl}/v1/feedback/forms/${feedback_form_id}/submit`,
