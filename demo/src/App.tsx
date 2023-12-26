@@ -22,10 +22,7 @@ function App() {
           options={{}}
         >
           <ParraFeedbackProvider>
-            <ParraCardView
-              cardsResponse={{ items: [] }}
-              onDismissClicked={() => {}}
-            />
+            <ParraCardView cardsResponse={{ items: [] }} />
           </ParraFeedbackProvider>
         </ParraProvider>
       </div>

@@ -1,35 +1,48 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PoweredByParraSvg from '../assets/svgs/PoweredByParra';
-export default function PoweredByParra() {
+import { ThemeName } from '../theme/Theme';
+
+export interface PoweredByParraProps {
+  forceTheme?: ThemeName;
+}
+
+export default function PoweredByParra({ forceTheme }: PoweredByParraProps) {
+  const systemTheme = () => {
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    return media.matches ? 'dark' : 'light';
+  };
+
+  const [theme, setTheme] = useState<ThemeName>(forceTheme || systemTheme());
+
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+
+    function onMediaChange() {
+      const newTheme = media.matches ? 'dark' : 'light';
+      setTheme(newTheme);
+    }
+
+    onMediaChange();
+    media.addEventListener('change', onMediaChange);
+
+    return () => {
+      media.removeEventListener('change', onMediaChange);
+    };
+  }, []);
+
   return (
     <a
+      title="Powered by Parra"
+      aria-label="Powered by Parra"
       href="https://parra.io"
       style={{
         display: 'inline-block',
-        color: 'rgba(0, 0, 0, 0.1)',
         margin: 3,
         textDecoration: 'none',
         textAlign: 'center',
       }}
     >
-      <PoweredByParraSvg />
-      <span
-        style={{
-          fontSize: 8,
-          fontWeight: 700,
-        }}
-      >
-        Powered by{' '}
-      </span>
-      <span
-        style={{
-          fontFamily: 'Pacifico',
-          fontSize: 11,
-          fontWeight: 400,
-        }}
-      >
-        Parra
-      </span>
+      <PoweredByParraSvg theme={theme} />
     </a>
   );
 }

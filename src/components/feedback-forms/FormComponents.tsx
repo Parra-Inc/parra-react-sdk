@@ -7,10 +7,12 @@ import {
 } from '../../lib/api/ParraAPI';
 
 export interface FeedbackFormTitleProps {
+  className?: string;
   title: string;
 }
 
 export interface FeedbackFormDescriptionProps {
+  className?: string;
   description: string;
 }
 
@@ -20,6 +22,7 @@ export type FormFieldContainerOverridableProps = {
 };
 
 export type FormFieldContainerProps = FormFieldContainerOverridableProps & {
+  className?: string;
   field: FeedbackFormField;
   label?: string;
   error?: any;
@@ -27,6 +30,7 @@ export type FormFieldContainerProps = FormFieldContainerOverridableProps & {
 };
 
 export type BaseFieldProps = FormFieldContainerProps & {
+  className?: string;
   name: string;
   disabled?: boolean;
   value?: any;
@@ -38,12 +42,13 @@ export type FormInputFieldProps = BaseFieldProps & FeedbackFormInputFieldData;
 export type FormFieldTextProps = BaseFieldProps & FeedbackFormTextFieldData;
 export type FormSelectFieldProps = BaseFieldProps & FeedbackFormSelectFieldData;
 export type FormButtonProps = {
+  className?: string;
   title: string;
   loading?: boolean;
   disabled?: boolean;
   onClick?: () => void;
 };
-export type FormLoaderBaseProps = { loading?: boolean };
+export type FormLoaderBaseProps = { loading?: boolean; className?: string };
 
 export type ComponentOverride<ComponentType, PropType = ComponentType> = {
   Component?: ElementType<ComponentType>;

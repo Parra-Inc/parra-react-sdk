@@ -18,6 +18,7 @@ import {
   FeedbackFormSelectFieldData,
   FeedbackFormTextFieldData,
   FeedbackFormInputFieldData,
+  FeedbackFormFieldType,
 } from '../../lib/api/ParraAPI';
 
 export interface FormOptions {
@@ -28,17 +29,23 @@ export interface FormOptions {
 export type FormSubmitHandler = (values: object) => Promise<void>;
 export type FormSuccessHandler = () => void;
 
-const Title = ({ title }: FeedbackFormTitleProps) => {
+const Title = ({ title, className }: FeedbackFormTitleProps) => {
   return (
-    <h1 className="title" style={{ marginTop: 0, marginBottom: 8 }}>
+    <h1
+      className={clsx('form-title', className)}
+      style={{ marginTop: 0, marginBottom: 8 }}
+    >
       {title}
     </h1>
   );
 };
 
-const Description = ({ description }: FeedbackFormDescriptionProps) => {
+const Description = ({
+  description,
+  className,
+}: FeedbackFormDescriptionProps) => {
   return (
-    <p className="description" style={{ marginTop: 8 }}>
+    <p className={clsx('form-description', className)} style={{ marginTop: 8 }}>
       {description}
     </p>
   );
@@ -46,26 +53,39 @@ const Description = ({ description }: FeedbackFormDescriptionProps) => {
 
 const FormFieldContainer: React.FC<
   PropsWithChildren<FormFieldContainerProps>
-> = ({ children, error, helperText, label, hideError, hideHelperText }) => {
+> = ({
+  children,
+  error,
+  helperText,
+  label,
+  hideError,
+  hideHelperText,
+  className,
+}) => {
+  const showErrorMessage = !hideError && error;
+  const showHelperText = !error && !hideHelperText && helperText;
   return (
-    <div className="form-field-container" style={{ marginTop: 14 }}>
+    <div
+      className={clsx('form-field-container', className)}
+      style={{ marginTop: 14 }}
+    >
       {label && <div className="label">{label}</div>}
 
       {children}
 
-      {!hideError && error && (
+      {showErrorMessage ? (
         <div
           className="error"
           style={{ marginTop: 4, color: 'red', fontSize: '0.8em' }}
         >
           {error}
         </div>
-      )}
-      {!error && !hideHelperText && helperText && (
+      ) : null}
+      {showHelperText ? (
         <div className="helper" style={{ marginTop: 4, fontSize: '0.8em' }}>
           {helperText}
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
@@ -74,12 +94,15 @@ const defaultComponents: FormComponents = {
   Title: Title,
   Description: Description,
   FieldContainer: FormFieldContainer,
-  Loader: ({ loading }) => {
-    return loading ? <div>Loading...</div> : null;
+  Loader: ({ loading, className }) => {
+    return loading ? (
+      <div className={clsx('form-loader', className)}>Loading...</div>
+    ) : null;
   },
-  Input: ({ name, value, onChange, disabled }) => {
+  Input: ({ name, value, onChange, disabled, className }) => {
     return (
       <input
+        className={clsx('form-input', className)}
         name={name}
         value={value}
         onChange={onChange}
@@ -87,9 +110,11 @@ const defaultComponents: FormComponents = {
       />
     );
   },
-  TextArea: ({ name, value, onChange, disabled }) => {
+  TextArea: ({ name, value, onChange, disabled, className }) => {
+    // TODO: - use lines, max_lines: maxLines, max_height: maxHeight, max_characters: maxCharacters, min_characters: minCharacters
     return (
       <textarea
+        className={clsx('form-textarea', className)}
         name={name}
         value={value}
         onChange={onChange}
@@ -97,9 +122,23 @@ const defaultComponents: FormComponents = {
       />
     );
   },
-  Select: ({ name, value, onChange, disabled, placeholder, options }) => {
+  Select: ({
+    name,
+    value,
+    onChange,
+    disabled,
+    placeholder,
+    options,
+    className,
+  }) => {
     return (
-      <select name={name} value={value} onChange={onChange} disabled={disabled}>
+      <select
+        className={clsx('form-select', className)}
+        name={name}
+        value={value}
+        onChange={onChange}
+        disabled={disabled}
+      >
         <option key={'placeholder'} value={''}>
           {placeholder || '-- Select an option --'}
         </option>
@@ -112,16 +151,25 @@ const defaultComponents: FormComponents = {
       </select>
     );
   },
-  Button: ({ title, onClick, disabled }) => {
+  Button: ({ title, onClick, disabled, className }) => {
     return (
-      <button onClick={onClick} disabled={disabled}>
+      <button
+        className={clsx('form-button', className)}
+        onClick={onClick}
+        disabled={disabled}
+      >
         {title}
       </button>
     );
   },
-  SubmitButton: ({ title, onClick, disabled }) => {
+  SubmitButton: ({ title, onClick, disabled, className }) => {
     return (
-      <button type="submit" onClick={onClick} disabled={disabled}>
+      <button
+        className={clsx('form-submit-button', className)}
+        type="submit"
+        onClick={onClick}
+        disabled={disabled}
+      >
         {title}
       </button>
     );
@@ -158,7 +206,7 @@ const inputForField = ({
   disabled?: boolean;
   required?: boolean;
 }) => {
-  if (field.type === 'select') {
+  if (field.type === FeedbackFormFieldType.select) {
     return (
       <Components.Select
         field={field}
@@ -174,7 +222,7 @@ const inputForField = ({
         {...(field.data as FeedbackFormSelectFieldData)}
       />
     );
-  } else if (field.type === 'input') {
+  } else if (field.type === FeedbackFormFieldType.input) {
     return (
       <Components.Input
         field={field}
@@ -190,7 +238,7 @@ const inputForField = ({
         {...(field.data as FeedbackFormInputFieldData)}
       />
     );
-  } else if (field.type === 'text') {
+  } else if (field.type === FeedbackFormFieldType.text) {
     return (
       <Components.TextArea
         field={field}
@@ -325,9 +373,9 @@ export default function ParraFormView({
     >
       <Components.Title title={form.data.title} />
 
-      {form.data.description && (
+      {form.data.description ? (
         <Components.Description description={form.data.description} />
-      )}
+      ) : null}
 
       <fieldset style={{ border: 'none', margin: 0, padding: 0 }}>
         {form.data.fields.map((field, index) => (
@@ -362,7 +410,7 @@ export default function ParraFormView({
         }}
       >
         <div style={{ flex: 1 }}>
-          {options?.showCancel && (
+          {options?.showCancel ? (
             <Components.Button
               disabled={disabled}
               title="Cancel"
@@ -370,7 +418,7 @@ export default function ParraFormView({
             >
               Cancel
             </Components.Button>
-          )}
+          ) : null}
         </div>
         <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
           <PoweredByParra />
