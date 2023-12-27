@@ -143,8 +143,8 @@ const defaultComponents: FormComponents = {
           {placeholder || '-- Select an option --'}
         </option>
 
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
+        {options.map((option, index) => (
+          <option key={`${option.value}-${index}`} value={option.value}>
             {option.title}
           </option>
         ))}
@@ -378,26 +378,29 @@ export default function ParraFormView({
       ) : null}
 
       <fieldset style={{ border: 'none', margin: 0, padding: 0 }}>
-        {form.data.fields.map((field, index) => (
-          <Components.FieldContainer
-            field={field}
-            key={`field-${field.name}-${index}`}
-            label={field.title}
-            error={errors[field.name]}
-            helperText={field.helper_text}
-          >
-            {inputForField({
-              Components,
-              field,
-              form,
-              options,
-              value: values[field.name],
-              onChange: (e) => handleChange(e, field),
-              error: errors[field.name],
-              disabled,
-            })}
-          </Components.FieldContainer>
-        ))}
+        {form.data.fields.map((field, index) => {
+          const key = `field-${field.name}-${index}`;
+          return (
+            <Components.FieldContainer
+              field={field}
+              key={key}
+              label={field.title}
+              error={errors[field.name]}
+              helperText={field.helper_text}
+            >
+              {inputForField({
+                Components,
+                field,
+                form,
+                options,
+                value: values[field.name],
+                onChange: (e) => handleChange(e, field),
+                error: errors[field.name],
+                disabled,
+              })}
+            </Components.FieldContainer>
+          );
+        })}
       </fieldset>
 
       <div
