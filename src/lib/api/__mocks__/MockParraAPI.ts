@@ -1,4 +1,4 @@
-import ParraAPI, { BulkAnswerQuestionsBody } from '../ParraAPI';
+import ParraAPI, { BulkAnswerQuestionBody } from '../ParraAPI';
 
 export const noContentResponse = (): Response => ({
   headers: new Headers(),
@@ -31,7 +31,7 @@ export const noContentResponse = (): Response => ({
 });
 
 class MockParraAPI extends ParraAPI {
-  bulkAnswerQuestions = async (body?: BulkAnswerQuestionsBody) => {
+  bulkAnswerQuestions = async (body?: BulkAnswerQuestionBody[]) => {
     return noContentResponse();
   };
 }

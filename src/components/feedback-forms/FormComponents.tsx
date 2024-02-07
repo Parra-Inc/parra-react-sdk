@@ -26,7 +26,7 @@ export type FormFieldContainerProps = FormFieldContainerOverridableProps & {
   field: FeedbackFormField;
   label?: string;
   error?: any;
-  helperText?: string;
+  helperText?: string | null;
 };
 
 export type BaseFieldProps = FormFieldContainerProps & {
