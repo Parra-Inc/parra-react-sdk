@@ -1,7 +1,7 @@
 {
   "author": "Parra",
   "name": "@parra/react-sdk",
-  "version": "1.33.14",
+  "version": "1.33.21",
   "description": "Parra SDK for React Single Page Applications (SPA)",
   "keywords": [],
   "files": [
@@ -83,6 +83,6 @@
     }
   },
   "dependencies": {
-    "clsx": "^2.0.0"
+    "clsx": "^2.1.0"
   }
 }

@@ -80,6 +80,76 @@ export interface CreateSubscriberRequestBody {
   email: string;
 }
 
+export enum FeedbackFormFieldType {
+  text = 'text',
+  input = 'input',
+  select = 'select',
+}
+
+export interface FeedbackFormTextFieldData {
+  placeholder?: string;
+  lines?: number;
+  max_lines?: number;
+  min_characters?: number;
+  max_characters?: number;
+  max_height?: number;
+}
+
+export interface FeedbackFormSelectFieldOption {
+  title: string;
+  value: string;
+  is_other?: boolean;
+}
+
+export interface FeedbackFormSelectFieldData {
+  placeholder?: string;
+  options: Array<FeedbackFormSelectFieldOption>;
+}
+
+export interface FeedbackFormInputFieldData {
+  placeholder?: string;
+}
+
+export type FeedbackFormFieldData =
+  | FeedbackFormTextFieldData
+  | FeedbackFormSelectFieldData
+  | FeedbackFormInputFieldData;
+
+export interface FeedbackFormField {
+  name: string;
+  title?: string;
+  helper_text?: string | null;
+  type: FeedbackFormFieldType;
+  required: boolean;
+  data: FeedbackFormFieldData;
+}
+
+export interface FeedbackFormData {
+  title: string;
+  description?: string | null;
+  fields: Array<FeedbackFormField>;
+}
+
+export interface FeedbackFormDataStub {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string | null;
+  data: FeedbackFormData;
+}
+
+export interface SubmitFeedbackFormResponseBody {}
+
+export interface AnswerData {}
+
+export interface BulkAnswerQuestionBody {
+  question_id: string;
+  bucket_item_id?: string | null;
+  data: AnswerData;
+}
+
+export type BulkAnswersQuestionBody = Array<BulkAnswerQuestionBody>;
+
 export enum CardItemType {
   question = 'question',
 }
@@ -225,8 +295,6 @@ export type QuestionData =
   | ShortTextQuestionBody
   | LongTextQuestionBody
   | BooleanQuestionBody;
-
-export interface AnswerData {}
 
 export interface Answer {
   id: string;
@@ -385,74 +453,6 @@ export interface CardsResponse {
   items: Array<CardItem>;
 }
 
-export enum FeedbackFormFieldType {
-  text = 'text',
-  input = 'input',
-  select = 'select',
-}
-
-export interface FeedbackFormTextFieldData {
-  placeholder?: string;
-  lines?: number;
-  max_lines?: number;
-  min_characters?: number;
-  max_characters?: number;
-  max_height?: number;
-}
-
-export interface FeedbackFormSelectFieldOption {
-  title: string;
-  value: string;
-  is_other?: boolean;
-}
-
-export interface FeedbackFormSelectFieldData {
-  placeholder?: string;
-  options: Array<FeedbackFormSelectFieldOption>;
-}
-
-export interface FeedbackFormInputFieldData {
-  placeholder?: string;
-}
-
-export type FeedbackFormFieldData =
-  | FeedbackFormTextFieldData
-  | FeedbackFormSelectFieldData
-  | FeedbackFormInputFieldData;
-
-export interface FeedbackFormField {
-  name: string;
-  title?: string;
-  helper_text?: string | null;
-  type: FeedbackFormFieldType;
-  required?: boolean;
-  data: FeedbackFormFieldData;
-}
-
-export interface FeedbackFormData {
-  title: string;
-  description?: string | null;
-  fields: Array<FeedbackFormField>;
-}
-
-export interface FeedbackFormDataStub {
-  id: string;
-  created_at: string;
-  updated_at: string;
-  deleted_at?: string | null;
-  data: FeedbackFormData;
-}
-
-export interface SubmitFeedbackFormResponseBody {}
-
-export interface BulkAnswerQuestionBody {
-  question_id: string;
-  bucket_item_id?: string | null;
-  data: AnswerData;
-}
-
-export type BulkAnswersQuestionBody = Array<BulkAnswerQuestionBody>;
-
 export interface UpdateUserRequestBody {
   first_name: string;
   last_name: string;
@@ -515,13 +515,6 @@ class ParraAPI {
     );
   };
 
-  getCards = (query?: { app_area_id?: string }): Promise<CardsResponse> => {
-    return this.http.execute(`${this.options.baseUrl}/v1/cards`, {
-      method: 'get',
-      query,
-    });
-  };
-
   getFormById = (feedback_form_id: string): Promise<FeedbackFormDataStub> => {
     return this.http.execute(
       `${this.options.baseUrl}/v1/feedback/forms/${feedback_form_id}`,
@@ -558,6 +551,21 @@ class ParraAPI {
           'content-type': 'application/json',
         },
         raw: true,
+      }
+    );
+  };
+
+  getCardsForTenantById = (
+    tenant_id: string,
+    query?: {
+      app_area_id?: string;
+    }
+  ): Promise<CardsResponse> => {
+    return this.http.execute(
+      `${this.options.baseUrl}/v1/tenants/${tenant_id}/cards`,
+      {
+        method: 'get',
+        query,
       }
     );
   };

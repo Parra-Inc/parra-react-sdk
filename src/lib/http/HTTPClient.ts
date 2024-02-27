@@ -19,10 +19,17 @@ export interface HTTPLogger {
   error: (value: string) => void;
 }
 
+export type FetchFunction = (
+  input: RequestInfo | URL,
+  init?: RequestInit
+) => Promise<Response>;
+
 export interface HTTPOptions {
+  authorization?: AuthorizationProvider;
+  fetch: FetchFunction;
   baseUrl?: string;
-  authorization: AuthorizationProvider;
   logger?: HTTPLogger;
+  interceptors?: Array<HTTPInterceptor>;
 }
 
 export type HTTPRequest = RequestInit & {
@@ -33,13 +40,13 @@ export type HTTPRequestWithoutMethod = Omit<HTTPRequest, 'method'>;
 
 export class HTTPClient {
   private token?: string;
+  private interceptors: Array<HTTPInterceptor>;
 
-  constructor(
-    private interceptors: Array<HTTPInterceptor> = new Array<HTTPInterceptor>(),
-    private options?: HTTPOptions
-  ) {
-    if (typeof options?.authorization === 'string') {
-      this.token = options?.authorization;
+  constructor(private options: HTTPOptions) {
+    this.interceptors = options.interceptors || [];
+
+    if (typeof options.authorization === 'string') {
+      this.token = options.authorization;
     }
   }
 
@@ -63,7 +70,7 @@ export class HTTPClient {
   }
 
   private async _signRequest(req: HTTPRequest): Promise<HTTPRequest> {
-    const authorization = this.options?.authorization;
+    const authorization = this.options.authorization;
 
     if (!authorization) {
       return req;
@@ -84,7 +91,7 @@ export class HTTPClient {
         const headers = new Headers(req.headers);
         headers.set('Authorization', `Bearer ${authToken}`);
         req.headers = headers;
-        this.options?.logger?.info(`Signing request with token ${this.token}`);
+        this.options.logger?.info(`Signing request with token ${this.token}`);
       }
     } catch (err) {
       console.error(err);
@@ -94,12 +101,12 @@ export class HTTPClient {
   }
 
   private async _refreshToken() {
-    const authorization = this.options?.authorization;
-    this.options?.logger?.info('Refreshing token...');
+    const authorization = this.options.authorization;
+    this.options.logger?.info('Refreshing token...');
 
     if (authorization) {
       this.token = await this.authorizationTokenForAuthorization(authorization);
-      this.options?.logger?.info(`refreshed token ${this.token}`);
+      this.options.logger?.info(`refreshed token ${this.token}`);
     }
   }
 
@@ -159,26 +166,26 @@ export class HTTPClient {
   }
 
   async execute<T>(path: string, req: HTTPRequest): Promise<T> {
-    this.options?.logger?.debug(`Executing ${req.method} ${path}`);
+    this.options.logger?.debug(`Executing ${req.method} ${path}`);
 
     const unsignedReqToSend = await this.willSendRequest(req);
 
-    this.options?.logger?.debug(
+    this.options.logger?.debug(
       `Unsigned request ${JSON.stringify(unsignedReqToSend)}`
     );
 
     // TODO: - Check token expiration and preemptively refresh token
     const signedReq = await this._signRequest(unsignedReqToSend);
 
-    this.options?.logger?.debug(`Signed request ${JSON.stringify(signedReq)}`);
+    this.options.logger?.debug(`Signed request ${JSON.stringify(signedReq)}`);
 
     const url = this._buildUrl(
       path,
       signedReq.query,
-      this.options?.baseUrl
+      this.options.baseUrl
     ).toString();
 
-    this.options?.logger?.debug(`Built url ${url}`);
+    this.options.logger?.debug(`Built url ${url}`);
 
     const requestInit = {
       method: signedReq.method,
@@ -186,16 +193,23 @@ export class HTTPClient {
       headers: signedReq.headers || new Headers(),
     };
 
-    this.options?.logger?.info(`${requestInit.method} url`);
-    this.options?.logger?.info(`Body: ${JSON.stringify(requestInit.body)}`);
-    this.options?.logger?.info(
+    this.options.logger?.info(`${requestInit.method} url`);
+    this.options.logger?.info(`Body: ${JSON.stringify(requestInit.body)}`);
+    this.options.logger?.info(
       `Headers: ${JSON.stringify(requestInit.headers)}`
     );
 
-    let rawRes = await fetch(url, requestInit);
+    let rawRes;
+
+    try {
+      rawRes = await this.options.fetch(url, requestInit);
+    } catch (err) {
+      this.options.logger?.error(`Error: ${JSON.stringify(err)}`);
+      throw err;
+    }
 
     if (rawRes.status === 401) {
-      this.options?.logger?.info(
+      this.options.logger?.info(
         `${requestInit.method} url -> ${rawRes.status} -> refreshing`
       );
 
@@ -204,14 +218,14 @@ export class HTTPClient {
 
       const resignedReq = await this._signRequest(unsignedReqToSend);
 
-      rawRes = await fetch(url, {
+      rawRes = await this.options.fetch(url, {
         method: resignedReq.method,
         body: resignedReq.body,
         headers: resignedReq.headers || new Headers(),
       });
     }
 
-    this.options?.logger?.info(`${requestInit.method} url -> ${rawRes.status}`);
+    this.options.logger?.info(`${requestInit.method} url -> ${rawRes.status}`);
 
     const res = await this.willHandleResponse(rawRes);
 
@@ -229,7 +243,7 @@ export class HTTPClient {
   private async _dataForRes(res: HTTPResponse): Promise<any> {
     const contentType = res.headers.get('content-type');
     const isJSON = contentType && contentType.includes('application/json');
-    this.options?.logger?.debug(`Content type: ${contentType}`);
+    this.options.logger?.debug(`Content type: ${contentType}`);
 
     if (isJSON) {
       const body = await res.json();

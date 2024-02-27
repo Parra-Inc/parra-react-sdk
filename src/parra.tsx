@@ -9,7 +9,7 @@ import {
   AuthInterceptor,
   AuthorizationProvider,
 } from './lib/http/AuthInterceptor';
-import { HTTPClient } from './lib/http/HTTPClient';
+import { FetchFunction, HTTPClient } from './lib/http/HTTPClient';
 
 interface Parra {
   api: ParraAPI;
@@ -30,6 +30,7 @@ export interface ParraLogger {
 export interface ParraOptions {
   baseUrl?: string;
   logger?: ParraLogger;
+  fetch?: FetchFunction;
 }
 
 interface Props {
@@ -54,7 +55,10 @@ export const ParraProvider: React.FC<PropsWithChildren<Props>> = ({
   const api = useMemo(() => {
     const baseUrl = options?.baseUrl ?? 'https://api.parra.io';
     const authInterceptor = new AuthInterceptor(authorization);
-    const http = new HTTPClient([authInterceptor]);
+    const http = new HTTPClient({
+      interceptors: [authInterceptor],
+      fetch: options?.fetch || ((...args) => window.fetch(...args)),
+    });
     return new ParraAPI(http, { baseUrl });
   }, [options?.baseUrl, authorization]);
 
