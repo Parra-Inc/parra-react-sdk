@@ -34,7 +34,34 @@ export interface UserResponse {
   email_verified?: boolean;
   locale?: string | null;
   type: string;
+  role?: string | null;
+  role_other_description?: string | null;
   avatar?: ImageAssetStub;
+}
+
+export enum IdentityType {
+  anonymous = 'anonymous',
+  username = 'username',
+  email = 'email',
+  phoneNumber = 'phone_number',
+  externalId = 'external_id',
+}
+
+export interface Identity {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string | null;
+  type: IdentityType;
+  provider?: string | null;
+  provider_user_id?: string | null;
+  email?: string | null;
+  email_verified?: boolean | null;
+  phone_number?: string | null;
+  phone_number_verified?: boolean | null;
+  username?: string | null;
+  external_id?: string | null;
+  has_password?: boolean | null;
 }
 
 export interface TenantUserStub {
@@ -44,7 +71,7 @@ export interface TenantUserStub {
   deleted_at?: string | null;
   tenant_id: string;
   name?: string | null;
-  avatar?: ImageAssetStub;
+  avatar?: ImageAssetStub | null;
 }
 
 export interface TenantUserCollectionStub {
@@ -54,8 +81,57 @@ export interface TenantUserCollectionStub {
   deleted_at?: string | null;
   tenant_id: string;
   name?: string | null;
-  avatar?: ImageAssetStub;
-  identity: string;
+  avatar?: ImageAssetStub | null;
+  identity?: string | null;
+  username?: string | null;
+  email?: string | null;
+  email_verified?: boolean | null;
+  phone_number?: string | null;
+  phone_number_verified?: boolean | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  is_anonymous: boolean;
+  is_internal: boolean;
+  is_test: boolean;
+  is_blocked?: boolean;
+  blocked_at?: string | null;
+  blocked_reason?: string | null;
+  locale?: string | null;
+  signed_up_at?: string | null;
+  last_updated_at?: string | null;
+  last_seen_at?: string | null;
+  last_login_at?: string | null;
+  has_password: boolean;
+}
+
+export interface TenantUserDataStub {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string | null;
+  tenant_id: string;
+  name?: string | null;
+  avatar?: ImageAssetStub | null;
+  identity?: string | null;
+  username?: string | null;
+  email?: string | null;
+  email_verified?: boolean | null;
+  phone_number?: string | null;
+  phone_number_verified?: boolean | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  is_anonymous: boolean;
+  is_internal: boolean;
+  is_test: boolean;
+  is_blocked?: boolean;
+  blocked_at?: string | null;
+  blocked_reason?: string | null;
+  locale?: string | null;
+  signed_up_at?: string | null;
+  last_updated_at?: string | null;
+  last_seen_at?: string | null;
+  last_login_at?: string | null;
+  has_password: boolean;
 }
 
 export interface TenantUser {
@@ -65,9 +141,30 @@ export interface TenantUser {
   deleted_at?: string | null;
   tenant_id: string;
   name?: string | null;
-  avatar?: ImageAssetStub;
-  identity: string;
+  avatar?: ImageAssetStub | null;
+  identity?: string | null;
+  username?: string | null;
+  email?: string | null;
+  email_verified?: boolean | null;
+  phone_number?: string | null;
+  phone_number_verified?: boolean | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  is_anonymous: boolean;
+  is_internal: boolean;
+  is_test: boolean;
+  is_blocked?: boolean;
+  blocked_at?: string | null;
+  blocked_reason?: string | null;
+  locale?: string | null;
+  signed_up_at?: string | null;
+  last_updated_at?: string | null;
+  last_seen_at?: string | null;
+  last_login_at?: string | null;
+  has_password: boolean;
   properties: object;
+  metadata: object;
+  identities?: Array<Identity> | null;
 }
 
 export interface UserInfoResponse {
@@ -76,7 +173,7 @@ export interface UserInfoResponse {
   tenant_user?: TenantUser | null;
 }
 
-export interface CreateSubscriberRequestBody {
+export interface CreateEmailSubscriberRequestBody {
   email: string;
 }
 
@@ -87,12 +184,12 @@ export enum FeedbackFormFieldType {
 }
 
 export interface FeedbackFormTextFieldData {
-  placeholder?: string;
-  lines?: number;
-  max_lines?: number;
-  min_characters?: number;
-  max_characters?: number;
-  max_height?: number;
+  placeholder?: string | null;
+  lines?: number | null;
+  max_lines?: number | null;
+  min_characters?: number | null;
+  max_characters?: number | null;
+  max_height?: number | null;
 }
 
 export interface FeedbackFormSelectFieldOption {
@@ -102,12 +199,12 @@ export interface FeedbackFormSelectFieldOption {
 }
 
 export interface FeedbackFormSelectFieldData {
-  placeholder?: string;
+  placeholder?: string | null;
   options: Array<FeedbackFormSelectFieldOption>;
 }
 
 export interface FeedbackFormInputFieldData {
-  placeholder?: string;
+  placeholder?: string | null;
 }
 
 export type FeedbackFormFieldData =
@@ -453,10 +550,35 @@ export interface CardsResponse {
   items: Array<CardItem>;
 }
 
+export interface LoginTenantUserRequestBody {
+  anonymous_token?: string | null;
+}
+
+export interface TenantUserInfo {
+  roles: Array<string>;
+  scopes: Array<string>;
+  user: TenantUser;
+}
+
+export interface AuthToken {
+  token_type: string;
+  access_token: string;
+  expires_in?: number;
+  refresh_token?: string;
+  scope?: string;
+}
+
+export interface AuthLogoutResponseBody {
+  anonymous_token?: AuthToken;
+  guest_token?: AuthToken;
+}
+
 export interface UpdateUserRequestBody {
   first_name: string;
   last_name: string;
   name: string;
+  role?: string | null;
+  role_other_description?: string | null;
 }
 
 export interface CreateIdentityRequestBody {
@@ -472,6 +594,7 @@ export interface CreateUserRequestBody {
   locale?: string | null;
   type: string;
   identities?: Array<CreateIdentityRequestBody>;
+  metadata?: object | null;
 }
 
 export interface CollectionResponse {
@@ -489,21 +612,27 @@ export interface UserCollectionResponse {
   data: Array<UserResponse>;
 }
 
+type Options = {
+  signal?: AbortSignal | null;
+};
+
 class ParraAPI {
   constructor(private http: HTTPClient, private options: { baseUrl: string }) {}
 
-  getUserInfo = (): Promise<UserInfoResponse> => {
+  getUserInfo = (options: Options = {}): Promise<UserInfoResponse> => {
     return this.http.execute(`${this.options.baseUrl}/v1/user-info`, {
       method: 'get',
+      ...options,
     });
   };
 
-  createSubscriberForAudienceById = (
-    audience_id: string,
-    body: CreateSubscriberRequestBody
+  createSubscriberForEmailAudienceById = (
+    email_audience_id: string,
+    body: CreateEmailSubscriberRequestBody,
+    options: Options = {}
   ): Promise<Response> => {
     return this.http.execute(
-      `${this.options.baseUrl}/v1/email/audiences/${audience_id}/subscribers`,
+      `${this.options.baseUrl}/v1/email/audiences/${email_audience_id}/subscribers`,
       {
         method: 'post',
         body: JSON.stringify(body),
@@ -511,22 +640,28 @@ class ParraAPI {
           'content-type': 'application/json',
         },
         raw: true,
+        ...options,
       }
     );
   };
 
-  getFormById = (feedback_form_id: string): Promise<FeedbackFormDataStub> => {
+  getFormById = (
+    feedback_form_id: string,
+    options: Options = {}
+  ): Promise<FeedbackFormDataStub> => {
     return this.http.execute(
       `${this.options.baseUrl}/v1/feedback/forms/${feedback_form_id}`,
       {
         method: 'get',
+        ...options,
       }
     );
   };
 
   submitFormById = (
     feedback_form_id: string,
-    body?: SubmitFeedbackFormResponseBody
+    body?: SubmitFeedbackFormResponseBody,
+    options: Options = {}
   ): Promise<Response> => {
     return this.http.execute(
       `${this.options.baseUrl}/v1/feedback/forms/${feedback_form_id}/submit`,
@@ -537,11 +672,15 @@ class ParraAPI {
           'content-type': 'application/json',
         },
         raw: true,
+        ...options,
       }
     );
   };
 
-  bulkAnswerQuestions = (body?: BulkAnswersQuestionBody): Promise<Response> => {
+  bulkAnswerQuestions = (
+    body?: BulkAnswersQuestionBody,
+    options: Options = {}
+  ): Promise<Response> => {
     return this.http.execute(
       `${this.options.baseUrl}/v1/bulk/questions/answer`,
       {
@@ -551,6 +690,7 @@ class ParraAPI {
           'content-type': 'application/json',
         },
         raw: true,
+        ...options,
       }
     );
   };
@@ -559,26 +699,111 @@ class ParraAPI {
     tenant_id: string,
     query?: {
       app_area_id?: string;
-    }
+    },
+    options: Options = {}
   ): Promise<CardsResponse> => {
     return this.http.execute(
       `${this.options.baseUrl}/v1/tenants/${tenant_id}/cards`,
       {
         method: 'get',
         query,
+        ...options,
       }
     );
   };
 
-  getUserById = (user_id: string): Promise<UserResponse> => {
+  loginUserForTenant = (
+    tenant_id: string,
+    body?: LoginTenantUserRequestBody,
+    options: Options = {}
+  ): Promise<TenantUserInfo> => {
+    return this.http.execute(
+      `${this.options.baseUrl}/v1/tenants/${tenant_id}/auth/login`,
+      {
+        method: 'post',
+        body: JSON.stringify(body),
+        headers: {
+          'content-type': 'application/json',
+        },
+        ...options,
+      }
+    );
+  };
+
+  getTenantUserInfo = (
+    tenant_id: string,
+    options: Options = {}
+  ): Promise<TenantUserInfo> => {
+    return this.http.execute(
+      `${this.options.baseUrl}/v1/tenants/${tenant_id}/auth/user-info`,
+      {
+        method: 'get',
+        ...options,
+      }
+    );
+  };
+
+  logoutUserForTenant = (
+    tenant_id: string,
+    options: Options = {}
+  ): Promise<AuthLogoutResponseBody> => {
+    return this.http.execute(
+      `${this.options.baseUrl}/v1/tenants/${tenant_id}/auth/logout`,
+      {
+        method: 'post',
+        ...options,
+      }
+    );
+  };
+
+  updateAvatarForTenantUserById = (
+    tenant_id: string,
+    user_id: string,
+    body: ImageAssetStub,
+    options: Options = {}
+  ): Promise<Response> => {
+    return this.http.execute(
+      `${this.options.baseUrl}/v1/tenants/${tenant_id}/users/${user_id}/avatar`,
+      {
+        method: 'put',
+        body: JSON.stringify(body),
+        headers: {
+          'content-type': 'application/json',
+        },
+        raw: true,
+        ...options,
+      }
+    );
+  };
+
+  deleteAvatarForTenantUserById = (
+    tenant_id: string,
+    user_id: string,
+    options: Options = {}
+  ): Promise<Response> => {
+    return this.http.execute(
+      `${this.options.baseUrl}/v1/tenants/${tenant_id}/users/${user_id}/avatar`,
+      {
+        method: 'delete',
+        ...options,
+      }
+    );
+  };
+
+  getUserById = (
+    user_id: string,
+    options: Options = {}
+  ): Promise<UserResponse> => {
     return this.http.execute(`${this.options.baseUrl}/v1/users/${user_id}`, {
       method: 'get',
+      ...options,
     });
   };
 
   updateUserById = (
     user_id: string,
-    body: UpdateUserRequestBody
+    body: UpdateUserRequestBody,
+    options: Options = {}
   ): Promise<UserResponse> => {
     return this.http.execute(`${this.options.baseUrl}/v1/users/${user_id}`, {
       method: 'put',
@@ -586,37 +811,50 @@ class ParraAPI {
       headers: {
         'content-type': 'application/json',
       },
+      ...options,
     });
   };
 
-  deleteUserById = (user_id: string): Promise<Response> => {
+  deleteUserById = (
+    user_id: string,
+    options: Options = {}
+  ): Promise<Response> => {
     return this.http.execute(`${this.options.baseUrl}/v1/users/${user_id}`, {
       method: 'delete',
+      ...options,
     });
   };
 
-  createUser = (body: CreateUserRequestBody): Promise<UserResponse> => {
+  createUser = (
+    body: CreateUserRequestBody,
+    options: Options = {}
+  ): Promise<UserResponse> => {
     return this.http.execute(`${this.options.baseUrl}/v1/users`, {
       method: 'post',
       body: JSON.stringify(body),
       headers: {
         'content-type': 'application/json',
       },
+      ...options,
     });
   };
 
-  listUsers = (query?: {
-    $select?: string;
-    $top?: number;
-    $skip?: number;
-    $orderby?: string;
-    $filter?: string;
-    $expand?: string;
-    $search?: string;
-  }): Promise<UserCollectionResponse> => {
+  listUsers = (
+    query?: {
+      $select?: string;
+      $top?: number;
+      $skip?: number;
+      $orderby?: string;
+      $filter?: string;
+      $expand?: string;
+      $search?: string;
+    },
+    options: Options = {}
+  ): Promise<UserCollectionResponse> => {
     return this.http.execute(`${this.options.baseUrl}/v1/users`, {
       method: 'get',
       query,
+      ...options,
     });
   };
 }

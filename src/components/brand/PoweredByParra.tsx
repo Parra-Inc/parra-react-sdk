@@ -1,34 +1,13 @@
-import React, { useEffect, useState } from 'react';
+'use client';
+
+import React from 'react';
 import PoweredByParraSvg from '../assets/svgs/PoweredByParra';
-import { ThemeName } from '../theme/Theme';
+import { useParra } from '../../parra';
 
-export interface PoweredByParraProps {
-  forceTheme?: ThemeName;
-}
+export interface PoweredByParraProps {}
 
-export default function PoweredByParra({ forceTheme }: PoweredByParraProps) {
-  const systemTheme = () => {
-    const media = window.matchMedia('(prefers-color-scheme: dark)');
-    return media.matches ? 'dark' : 'light';
-  };
-
-  const [theme, setTheme] = useState<ThemeName>(forceTheme || systemTheme());
-
-  useEffect(() => {
-    const media = window.matchMedia('(prefers-color-scheme: dark)');
-
-    function onMediaChange() {
-      const newTheme = media.matches ? 'dark' : 'light';
-      setTheme(newTheme);
-    }
-
-    onMediaChange();
-    media.addEventListener('change', onMediaChange);
-
-    return () => {
-      media.removeEventListener('change', onMediaChange);
-    };
-  }, []);
+export default function PoweredByParra({}: PoweredByParraProps) {
+  const { theme } = useParra();
 
   return (
     <a
@@ -42,7 +21,7 @@ export default function PoweredByParra({ forceTheme }: PoweredByParraProps) {
         textAlign: 'center',
       }}
     >
-      <PoweredByParraSvg theme={theme} />
+      <PoweredByParraSvg theme={theme === 'dark' ? 'dark' : 'light'} />
     </a>
   );
 }

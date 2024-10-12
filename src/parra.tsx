@@ -14,6 +14,7 @@ import { FetchFunction, HTTPClient } from './lib/http/HTTPClient';
 interface Parra {
   api: ParraAPI;
   tenantId: string;
+  theme?: string;
 }
 
 const Context = createContext<Parra>(null as any);
@@ -37,6 +38,7 @@ interface Props {
   tenantId: string;
   authorization: AuthorizationProvider;
   options?: ParraOptions;
+  theme?: string;
 }
 
 export const ParraContext: React.FC<PropsWithChildren<Parra>> = ({
@@ -51,6 +53,7 @@ export const ParraProvider: React.FC<PropsWithChildren<Props>> = ({
   tenantId,
   authorization,
   options,
+  theme,
 }) => {
   const api = useMemo(() => {
     const baseUrl = options?.baseUrl ?? 'https://api.parra.io';
@@ -63,7 +66,7 @@ export const ParraProvider: React.FC<PropsWithChildren<Props>> = ({
   }, [options?.baseUrl, authorization]);
 
   return (
-    <ParraContext api={api} tenantId={tenantId}>
+    <ParraContext api={api} tenantId={tenantId} theme={theme}>
       {children}
     </ParraContext>
   );

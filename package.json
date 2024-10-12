@@ -1,7 +1,7 @@
 {
   "author": "Parra",
   "name": "@parra/react-sdk",
-  "version": "1.33.21",
+  "version": "1.4.0",
   "description": "Parra SDK for React Single Page Applications (SPA)",
   "keywords": [],
   "files": [
