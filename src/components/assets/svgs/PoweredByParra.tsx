@@ -1,9 +1,11 @@
 import React from 'react';
+import { useParraTheme } from '../../../parra-theme';
 
 export default function PoweredByParra(
-  props: React.ComponentPropsWithoutRef<'svg'> & { theme: 'dark' | 'light' }
+  props: React.ComponentPropsWithoutRef<'svg'>
 ) {
-  const fill = props.theme === 'dark' ? '#ffffff' : '#171A1C';
+  const { isDark } = useParraTheme();
+  const fill = isDark ? '#ffffff' : '#171A1C';
 
   return (
     <svg

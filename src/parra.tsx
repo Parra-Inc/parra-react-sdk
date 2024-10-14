@@ -10,6 +10,7 @@ import {
   AuthorizationProvider,
 } from './lib/http/AuthInterceptor';
 import { FetchFunction, HTTPClient } from './lib/http/HTTPClient';
+import { ParraThemeProvider } from './parra-theme';
 
 interface Parra {
   api: ParraAPI;
@@ -66,8 +67,10 @@ export const ParraProvider: React.FC<PropsWithChildren<Props>> = ({
   }, [options?.baseUrl, authorization]);
 
   return (
-    <ParraContext api={api} tenantId={tenantId} theme={theme}>
-      {children}
-    </ParraContext>
+    <ParraThemeProvider theme={theme}>
+      <ParraContext api={api} tenantId={tenantId}>
+        {children}
+      </ParraContext>
+    </ParraThemeProvider>
   );
 };

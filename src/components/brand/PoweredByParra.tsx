@@ -2,26 +2,49 @@
 
 import React from 'react';
 import PoweredByParraSvg from '../assets/svgs/PoweredByParra';
-import { useParra } from '../../parra';
 
-export interface PoweredByParraProps {}
+export interface PoweredByParraProps {
+  className?: string;
+  tenantId?: string;
+  applicationId?: string;
+}
 
-export default function PoweredByParra({}: PoweredByParraProps) {
-  const { theme } = useParra();
+const makeHref = (tenantId?: string, applicationId?: string) => {
+  const url = new URL('https://parra.io');
 
+  url.searchParams.append('utm_medium', 'powered_by_parra');
+  url.searchParams.append('utm_source', 'parra_web');
+
+  if (tenantId) {
+    url.searchParams.append('tenant_id', tenantId);
+  }
+
+  if (applicationId) {
+    url.searchParams.append('application_id', applicationId);
+  }
+
+  return url.toString();
+};
+
+export default function PoweredByParra({
+  className,
+  tenantId,
+  applicationId,
+}: PoweredByParraProps) {
   return (
     <a
       title="Powered by Parra"
       aria-label="Powered by Parra"
-      href="https://parra.io"
+      href={makeHref(tenantId, applicationId)}
       style={{
         display: 'inline-block',
         margin: 3,
         textDecoration: 'none',
         textAlign: 'center',
       }}
+      className={className}
     >
-      <PoweredByParraSvg theme={theme === 'dark' ? 'dark' : 'light'} />
+      <PoweredByParraSvg />
     </a>
   );
 }
