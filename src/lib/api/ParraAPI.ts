@@ -218,6 +218,7 @@ export interface FeedbackFormField {
   helper_text?: string | null;
   type: FeedbackFormFieldType;
   required: boolean;
+  hidden?: boolean;
   data: FeedbackFormFieldData;
 }
 

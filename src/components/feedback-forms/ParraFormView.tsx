@@ -185,6 +185,7 @@ export interface Props {
   Components: FormComponentOverrides;
   options?: FormOptions;
   preview?: boolean;
+  values?: object;
 }
 
 const inputForField = ({
@@ -267,6 +268,7 @@ export default function ParraFormView({
   submit,
   success,
   Components: ComponentOverrides,
+  values: defaultValues,
 }: Props) {
   const overrideComponents: { [key: string]: any } = {};
 
@@ -325,7 +327,7 @@ export default function ParraFormView({
     setSubmitting(true);
 
     validateForm(form)
-      .then(() => submit(values))
+      .then(() => submit({ ...defaultValues, ...values }))
       .then(success)
       .catch((err) => {
         setErrors(err);
@@ -366,6 +368,8 @@ export default function ParraFormView({
     return null;
   }
 
+  const visibleFields = form.data.fields.filter((field) => !field.hidden);
+
   return (
     <form
       className={clsx('parra-feedback-form', className)}
@@ -378,7 +382,7 @@ export default function ParraFormView({
       ) : null}
 
       <fieldset style={{ border: 'none', margin: 0, padding: 0 }}>
-        {form.data.fields.map((field, index) => {
+        {visibleFields.map((field, index) => {
           const key = `field-${field.name}-${index}`;
           return (
             <Components.FieldContainer
@@ -387,6 +391,7 @@ export default function ParraFormView({
               label={field.title}
               error={errors[field.name]}
               helperText={field.helper_text}
+              required={field.required}
             >
               {inputForField({
                 Components,
@@ -397,6 +402,7 @@ export default function ParraFormView({
                 onChange: (e) => handleChange(e, field),
                 error: errors[field.name],
                 disabled,
+                required: field.required,
               })}
             </Components.FieldContainer>
           );

@@ -1,5 +1,6 @@
 export { default as PoweredByParra } from './components/brand/PoweredByParra';
 export { ParraProvider, ParraLogger, useParra } from './parra';
+export { ParraThemeProvider, useParraTheme } from './parra-theme';
 export {
   default as ParraFormView,
   FormOptions,
