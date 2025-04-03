@@ -93,6 +93,8 @@ web_modules/
 # Optional npm cache directory
 .npm
 
+.turbo
+
 # Optional eslint cache
 .eslintcache
 

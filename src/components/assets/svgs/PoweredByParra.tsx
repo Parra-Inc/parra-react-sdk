@@ -1,11 +1,12 @@
 import React from 'react';
 import { useParraTheme } from '../../../parra-theme';
 
-export default function PoweredByParra(
-  props: React.ComponentPropsWithoutRef<'svg'>
-) {
-  const { isDark } = useParraTheme();
-  const fill = isDark ? '#ffffff' : '#171A1C';
+const PoweredByParra = (
+  { isDark, ...props }: React.ComponentPropsWithoutRef<'svg'> & { isDark?: boolean }
+) => {
+  const theme = useParraTheme();
+  const dark = typeof isDark === "boolean" ? isDark : (theme ? theme.isDark : false)
+  const fill = dark ? '#ffffff' : '#171A1C';
 
   return (
     <svg
@@ -61,3 +62,5 @@ export default function PoweredByParra(
     </svg>
   );
 }
+
+export default PoweredByParra;
