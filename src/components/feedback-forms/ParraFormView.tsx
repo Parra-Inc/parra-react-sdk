@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect, useMemo, PropsWithChildren } from 'react';
 import clsx from 'clsx';
 import { useParra } from '../../parra';
@@ -62,33 +61,33 @@ const FormFieldContainer: React.FC<
   hideHelperText,
   className,
 }) => {
-  const showErrorMessage = !hideError && error;
-  const showHelperText = !error && !hideHelperText && helperText;
-  return (
-    <div
-      className={clsx('form-field-container', className)}
-      style={{ marginTop: 14 }}
-    >
-      {label && <div className="label">{label}</div>}
+    const showErrorMessage = !hideError && error;
+    const showHelperText = !error && !hideHelperText && helperText;
+    return (
+      <div
+        className={clsx('form-field-container', className)}
+        style={{ marginTop: 14 }}
+      >
+        {label && <div className="label">{label}</div>}
 
-      {children}
+        {children}
 
-      {showErrorMessage ? (
-        <div
-          className="error"
-          style={{ marginTop: 4, color: 'red', fontSize: '0.8em' }}
-        >
-          {error}
-        </div>
-      ) : null}
-      {showHelperText ? (
-        <div className="helper" style={{ marginTop: 4, fontSize: '0.8em' }}>
-          {helperText}
-        </div>
-      ) : null}
-    </div>
-  );
-};
+        {showErrorMessage ? (
+          <div
+            className="error"
+            style={{ marginTop: 4, color: 'red', fontSize: '0.8em' }}
+          >
+            {error}
+          </div>
+        ) : null}
+        {showHelperText ? (
+          <div className="helper" style={{ marginTop: 4, fontSize: '0.8em' }}>
+            {helperText}
+          </div>
+        ) : null}
+      </div>
+    );
+  };
 
 const defaultComponents: FormComponents = {
   Title: Title,

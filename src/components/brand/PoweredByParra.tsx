@@ -7,6 +7,7 @@ export interface PoweredByParraProps {
   className?: string;
   tenantId?: string;
   applicationId?: string;
+  isDark?: boolean;
 }
 
 const makeHref = (tenantId?: string, applicationId?: string) => {
@@ -30,6 +31,7 @@ export default function PoweredByParra({
   className,
   tenantId,
   applicationId,
+  isDark,
 }: PoweredByParraProps) {
   return (
     <a
@@ -44,7 +46,7 @@ export default function PoweredByParra({
       }}
       className={className}
     >
-      <PoweredByParraSvg />
+      <PoweredByParraSvg isDark={isDark} />
     </a>
   );
 }

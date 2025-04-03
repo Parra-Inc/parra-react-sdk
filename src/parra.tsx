@@ -8,8 +8,9 @@ import ParraAPI from './lib/api/ParraAPI';
 import {
   AuthInterceptor,
   AuthorizationProvider,
-} from './lib/http/AuthInterceptor';
-import { FetchFunction, HTTPClient } from './lib/http/HTTPClient';
+  FetchFunction,
+  HTTPClient,
+} from '@parra/http-client';
 import { ParraThemeProvider } from './parra-theme';
 
 interface Parra {
