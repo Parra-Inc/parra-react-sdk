@@ -279,9 +279,9 @@ export interface FeedbackFormDataStub {
   data: FeedbackFormData
 }
 
-export interface SubmitFeedbackFormResponseBody { }
+export interface SubmitFeedbackFormResponseBody {}
 
-export interface AnswerData { }
+export interface AnswerData {}
 
 export interface BulkAnswerQuestionBody {
   question_id: string
@@ -522,9 +522,9 @@ export interface StarQuestionMetricsBody {
   options: Array<StarQuestionMetricsOption>
 }
 
-export interface LongTextQuestionMetricsBody { }
+export interface LongTextQuestionMetricsBody {}
 
-export interface ShortTextQuestionMetricsBody { }
+export interface ShortTextQuestionMetricsBody {}
 
 export interface BooleanQuestionMetricsOption {
   title: string
@@ -661,7 +661,7 @@ type Options = {
 }
 
 class ParraAPI {
-  constructor(private http: HTTPClient, private options: { baseUrl: string }) { }
+  constructor(private http: HTTPClient, private options: { baseUrl: string }) {}
 
   getUserInfo = (options: Options = {}): Promise<UserInfoResponse> => {
     return this.http.execute(`${this.options.baseUrl}/v1/user-info`, {
