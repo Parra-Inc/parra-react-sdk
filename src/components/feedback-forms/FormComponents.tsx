@@ -1,4 +1,4 @@
-import { ElementType, PropsWithChildren } from 'react';
+import { CSSProperties, ElementType, PropsWithChildren } from 'react';
 import {
   FeedbackFormSelectFieldData,
   FeedbackFormTextFieldData,
@@ -8,11 +8,13 @@ import {
 
 export interface FeedbackFormTitleProps {
   className?: string;
+  style?: CSSProperties;
   title: string;
 }
 
 export interface FeedbackFormDescriptionProps {
   className?: string;
+  style?: CSSProperties;
   description: string;
 }
 
@@ -23,6 +25,7 @@ export type FormFieldContainerOverridableProps = {
 
 export type FormFieldContainerProps = FormFieldContainerOverridableProps & {
   className?: string;
+  style?: CSSProperties;
   field: FeedbackFormField;
   label?: string;
   error?: any;
@@ -31,6 +34,7 @@ export type FormFieldContainerProps = FormFieldContainerOverridableProps & {
 
 export type BaseFieldProps = FormFieldContainerProps & {
   className?: string;
+  style?: CSSProperties;
   name: string;
   disabled?: boolean;
   value?: any;
@@ -43,12 +47,17 @@ export type FormFieldTextProps = BaseFieldProps & FeedbackFormTextFieldData;
 export type FormSelectFieldProps = BaseFieldProps & FeedbackFormSelectFieldData;
 export type FormButtonProps = {
   className?: string;
+  style?: CSSProperties;
   title: string;
   loading?: boolean;
   disabled?: boolean;
   onClick?: () => void;
 };
-export type FormLoaderBaseProps = { loading?: boolean; className?: string };
+export type FormLoaderBaseProps = {
+  loading?: boolean;
+  className?: string;
+  style?: CSSProperties;
+};
 
 export type ComponentOverride<ComponentType, PropType = ComponentType> = {
   Component?: ElementType<ComponentType>;

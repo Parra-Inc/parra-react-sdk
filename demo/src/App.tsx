@@ -1,8 +1,6 @@
 import './App.css';
 import {
-  ParraCardView,
   ParraProvider,
-  ParraFeedbackProvider,
 } from '@parra/react-sdk';
 
 function App() {
@@ -21,9 +19,6 @@ function App() {
           authorization={async () => 'abc123'}
           options={{}}
         >
-          <ParraFeedbackProvider>
-            <ParraCardView cardsResponse={{ items: [] }} />
-          </ParraFeedbackProvider>
         </ParraProvider>
       </div>
     </div>

@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import PoweredByParraSvg from '../assets/svgs/PoweredByParra';
 
 export interface PoweredByParraProps {
   className?: string;
+  style?: CSSProperties;
   tenantId?: string;
   applicationId?: string;
   isDark?: boolean;
@@ -32,6 +33,7 @@ export default function PoweredByParra({
   tenantId,
   applicationId,
   isDark,
+  style,
 }: PoweredByParraProps) {
   return (
     <a
@@ -43,6 +45,7 @@ export default function PoweredByParra({
         margin: 3,
         textDecoration: 'none',
         textAlign: 'center',
+        ...style,
       }}
       className={className}
     >

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, PropsWithChildren } from 'react';
+import React, { useState, useEffect, useMemo, PropsWithChildren, CSSProperties } from 'react';
 import clsx from 'clsx';
 import { useParra } from '../../parra';
 import PoweredByParra from '../brand/PoweredByParra';
@@ -28,11 +28,11 @@ export interface FormOptions {
 export type FormSubmitHandler = (values: object) => Promise<void>;
 export type FormSuccessHandler = () => void;
 
-const Title = ({ title, className }: FeedbackFormTitleProps) => {
+const Title = ({ title, className, style }: FeedbackFormTitleProps) => {
   return (
     <h1
       className={clsx('form-title', className)}
-      style={{ marginTop: 0, marginBottom: 8 }}
+      style={{ marginTop: 0, marginBottom: 8, ...style }}
     >
       {title}
     </h1>
@@ -42,9 +42,13 @@ const Title = ({ title, className }: FeedbackFormTitleProps) => {
 const Description = ({
   description,
   className,
+  style,
 }: FeedbackFormDescriptionProps) => {
   return (
-    <p className={clsx('form-description', className)} style={{ marginTop: 8 }}>
+    <p
+      className={clsx('form-description', className)}
+      style={{ marginTop: 8, ...style }}
+    >
       {description}
     </p>
   );
@@ -60,13 +64,14 @@ const FormFieldContainer: React.FC<
   hideError,
   hideHelperText,
   className,
+  style,
 }) => {
     const showErrorMessage = !hideError && error;
     const showHelperText = !error && !hideHelperText && helperText;
     return (
       <div
         className={clsx('form-field-container', className)}
-        style={{ marginTop: 14 }}
+        style={{ marginTop: 14, ...style }}
       >
         {label && <div className="label">{label}</div>}
 
@@ -93,15 +98,16 @@ const defaultComponents: FormComponents = {
   Title: Title,
   Description: Description,
   FieldContainer: FormFieldContainer,
-  Loader: ({ loading, className }) => {
+  Loader: ({ loading, className, style }) => {
     return loading ? (
-      <div className={clsx('form-loader', className)}>Loading...</div>
+      <div className={clsx('form-loader', className)} style={style}>Loading...</div>
     ) : null;
   },
-  Input: ({ name, value, onChange, disabled, className }) => {
+  Input: ({ name, value, onChange, disabled, className, style }) => {
     return (
       <input
         className={clsx('form-input', className)}
+        style={style}
         name={name}
         value={value}
         onChange={onChange}
@@ -109,11 +115,12 @@ const defaultComponents: FormComponents = {
       />
     );
   },
-  TextArea: ({ name, value, onChange, disabled, className }) => {
+  TextArea: ({ name, value, onChange, disabled, className, style }) => {
     // TODO: - use lines, max_lines: maxLines, max_height: maxHeight, max_characters: maxCharacters, min_characters: minCharacters
     return (
       <textarea
         className={clsx('form-textarea', className)}
+        style={style}
         name={name}
         value={value}
         onChange={onChange}
@@ -129,10 +136,12 @@ const defaultComponents: FormComponents = {
     placeholder,
     options,
     className,
+    style,
   }) => {
     return (
       <select
         className={clsx('form-select', className)}
+        style={style}
         name={name}
         value={value}
         onChange={onChange}
@@ -150,10 +159,11 @@ const defaultComponents: FormComponents = {
       </select>
     );
   },
-  Button: ({ title, onClick, disabled, className }) => {
+  Button: ({ title, onClick, disabled, className, style }) => {
     return (
       <button
         className={clsx('form-button', className)}
+        style={style}
         onClick={onClick}
         disabled={disabled}
       >
@@ -161,10 +171,11 @@ const defaultComponents: FormComponents = {
       </button>
     );
   },
-  SubmitButton: ({ title, onClick, disabled, className }) => {
+  SubmitButton: ({ title, onClick, disabled, className, style }) => {
     return (
       <button
         className={clsx('form-submit-button', className)}
+        style={style}
         type="submit"
         onClick={onClick}
         disabled={disabled}
@@ -177,6 +188,7 @@ const defaultComponents: FormComponents = {
 
 export interface Props {
   className?: string;
+  style?: CSSProperties;
   buttonBarClassName?: string;
   form: string | FeedbackFormDataStub;
   submit: FormSubmitHandler;
@@ -261,6 +273,7 @@ const inputForField = ({
 
 export default function ParraFormView({
   className,
+  style,
   buttonBarClassName,
   form: formProvider,
   options,
@@ -372,6 +385,7 @@ export default function ParraFormView({
   return (
     <form
       className={clsx('parra-feedback-form', className)}
+      style={style}
       onSubmit={handleSubmit}
     >
       <Components.Title title={form.data.title} />

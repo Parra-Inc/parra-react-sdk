@@ -26,5 +26,3 @@ export {
   FormComponentOverrides,
   FormComponents,
 } from './components/feedback-forms/FormComponents';
-export { default as ParraCardView } from './components/card/ParraCardView';
-export { ParraFeedbackProvider } from './components/feedback/context';

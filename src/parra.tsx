@@ -59,13 +59,16 @@ export const ParraProvider: React.FC<PropsWithChildren<Props>> = ({
 }) => {
   const api = useMemo(() => {
     const baseUrl = options?.baseUrl ?? 'https://api.parra.io';
-    const authInterceptor = new AuthInterceptor(authorization);
+    const authInterceptor = new AuthInterceptor(authorization, {
+      logger: options?.logger,
+    });
     const http = new HTTPClient({
       interceptors: [authInterceptor],
       fetch: options?.fetch || ((...args) => window.fetch(...args)),
+      logger: options?.logger,
     });
     return new ParraAPI(http, { baseUrl });
-  }, [options?.baseUrl, authorization]);
+  }, [options, authorization]);
 
   return (
     <ParraThemeProvider theme={theme}>

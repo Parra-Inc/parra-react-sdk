@@ -1,7 +1,7 @@
 {
   "author": "Parra",
   "name": "@parra/react-sdk",
-  "version": "1.6.1",
+  "version": "1.8.0",
   "description": "Parra SDK for React Single Page Applications (SPA)",
   "keywords": [],
   "type": "module",
@@ -58,6 +58,7 @@
     "typescript": "^5.8.2"
   },
   "peerDependencies": {
+    "@parra/http-client": "^0.7.1",
     "react": "^19",
     "react-dom": "^19"
   },
@@ -67,7 +68,6 @@
     }
   },
   "dependencies": {
-    "@parra/http-client": "^0.7.0",
     "clsx": "^2.1.0"
   }
 }

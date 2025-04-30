@@ -664,7 +664,8 @@ class ParraAPI {
   constructor(private http: HTTPClient, private options: { baseUrl: string }) {}
 
   getUserInfo = (options: Options = {}): Promise<UserInfoResponse> => {
-    return this.http.execute(`${this.options.baseUrl}/v1/user-info`, {
+    return this.http.execute({
+      path: `${this.options.baseUrl}/v1/user-info`,
       method: "get",
       ...options,
     })
@@ -675,31 +676,27 @@ class ParraAPI {
     body: CreateEmailSubscriberRequestBody,
     options: Options = {}
   ): Promise<Response> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/email/audiences/${email_audience_id}/subscribers`,
-      {
-        method: "post",
-        body: JSON.stringify(body),
-        headers: {
-          "content-type": "application/json",
-        },
-        raw: true,
-        ...options,
-      }
-    )
+    return this.http.execute({
+      path: `${this.options.baseUrl}/v1/email/audiences/${email_audience_id}/subscribers`,
+      method: "post",
+      body: JSON.stringify(body),
+      headers: {
+        "content-type": "application/json",
+      },
+      raw: true,
+      ...options,
+    })
   }
 
   getFormById = (
     feedback_form_id: string,
     options: Options = {}
   ): Promise<FeedbackFormDataStub> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/feedback/forms/${feedback_form_id}`,
-      {
-        method: "get",
-        ...options,
-      }
-    )
+    return this.http.execute({
+      path: `${this.options.baseUrl}/v1/feedback/forms/${feedback_form_id}`,
+      method: "get",
+      ...options,
+    })
   }
 
   submitFormById = (
@@ -707,36 +704,32 @@ class ParraAPI {
     body?: SubmitFeedbackFormResponseBody,
     options: Options = {}
   ): Promise<Response> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/feedback/forms/${feedback_form_id}/submit`,
-      {
-        method: "post",
-        body: JSON.stringify(body),
-        headers: {
-          "content-type": "application/json",
-        },
-        raw: true,
-        ...options,
-      }
-    )
+    return this.http.execute({
+      path: `${this.options.baseUrl}/v1/feedback/forms/${feedback_form_id}/submit`,
+      method: "post",
+      body: JSON.stringify(body),
+      headers: {
+        "content-type": "application/json",
+      },
+      raw: true,
+      ...options,
+    })
   }
 
   bulkAnswerQuestions = (
     body?: BulkAnswersQuestionBody,
     options: Options = {}
   ): Promise<Response> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/bulk/questions/answer`,
-      {
-        method: "post",
-        body: JSON.stringify(body),
-        headers: {
-          "content-type": "application/json",
-        },
-        raw: true,
-        ...options,
-      }
-    )
+    return this.http.execute({
+      path: `${this.options.baseUrl}/v1/bulk/questions/answer`,
+      method: "post",
+      body: JSON.stringify(body),
+      headers: {
+        "content-type": "application/json",
+      },
+      raw: true,
+      ...options,
+    })
   }
 
   getCardsForTenantById = (
@@ -746,14 +739,12 @@ class ParraAPI {
     },
     options: Options = {}
   ): Promise<CardsResponse> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/tenants/${tenant_id}/cards`,
-      {
-        method: "get",
-        query,
-        ...options,
-      }
-    )
+    return this.http.execute({
+      path: `${this.options.baseUrl}/v1/tenants/${tenant_id}/cards`,
+      method: "get",
+      query,
+      ...options,
+    })
   }
 
   loginUserForTenant = (
@@ -761,43 +752,37 @@ class ParraAPI {
     body?: LoginTenantUserRequestBody,
     options: Options = {}
   ): Promise<TenantUserInfo> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/tenants/${tenant_id}/auth/login`,
-      {
-        method: "post",
-        body: JSON.stringify(body),
-        headers: {
-          "content-type": "application/json",
-        },
-        ...options,
-      }
-    )
+    return this.http.execute({
+      path: `${this.options.baseUrl}/v1/tenants/${tenant_id}/auth/login`,
+      method: "post",
+      body: JSON.stringify(body),
+      headers: {
+        "content-type": "application/json",
+      },
+      ...options,
+    })
   }
 
   getTenantUserInfo = (
     tenant_id: string,
     options: Options = {}
   ): Promise<TenantUserInfo> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/tenants/${tenant_id}/auth/user-info`,
-      {
-        method: "get",
-        ...options,
-      }
-    )
+    return this.http.execute({
+      path: `${this.options.baseUrl}/v1/tenants/${tenant_id}/auth/user-info`,
+      method: "get",
+      ...options,
+    })
   }
 
   logoutUserForTenant = (
     tenant_id: string,
     options: Options = {}
   ): Promise<AuthLogoutResponseBody> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/tenants/${tenant_id}/auth/logout`,
-      {
-        method: "post",
-        ...options,
-      }
-    )
+    return this.http.execute({
+      path: `${this.options.baseUrl}/v1/tenants/${tenant_id}/auth/logout`,
+      method: "post",
+      ...options,
+    })
   }
 
   updateAvatarForTenantUserById = (
@@ -806,18 +791,16 @@ class ParraAPI {
     body: ImageAssetStub,
     options: Options = {}
   ): Promise<Response> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/tenants/${tenant_id}/users/${user_id}/avatar`,
-      {
-        method: "put",
-        body: JSON.stringify(body),
-        headers: {
-          "content-type": "application/json",
-        },
-        raw: true,
-        ...options,
-      }
-    )
+    return this.http.execute({
+      path: `${this.options.baseUrl}/v1/tenants/${tenant_id}/users/${user_id}/avatar`,
+      method: "put",
+      body: JSON.stringify(body),
+      headers: {
+        "content-type": "application/json",
+      },
+      raw: true,
+      ...options,
+    })
   }
 
   deleteAvatarForTenantUserById = (
@@ -825,20 +808,19 @@ class ParraAPI {
     user_id: string,
     options: Options = {}
   ): Promise<Response> => {
-    return this.http.execute(
-      `${this.options.baseUrl}/v1/tenants/${tenant_id}/users/${user_id}/avatar`,
-      {
-        method: "delete",
-        ...options,
-      }
-    )
+    return this.http.execute({
+      path: `${this.options.baseUrl}/v1/tenants/${tenant_id}/users/${user_id}/avatar`,
+      method: "delete",
+      ...options,
+    })
   }
 
   getUserById = (
     user_id: string,
     options: Options = {}
   ): Promise<UserResponse> => {
-    return this.http.execute(`${this.options.baseUrl}/v1/users/${user_id}`, {
+    return this.http.execute({
+      path: `${this.options.baseUrl}/v1/users/${user_id}`,
       method: "get",
       ...options,
     })
@@ -849,7 +831,8 @@ class ParraAPI {
     body: UpdateUserRequestBody,
     options: Options = {}
   ): Promise<UserResponse> => {
-    return this.http.execute(`${this.options.baseUrl}/v1/users/${user_id}`, {
+    return this.http.execute({
+      path: `${this.options.baseUrl}/v1/users/${user_id}`,
       method: "put",
       body: JSON.stringify(body),
       headers: {
@@ -863,7 +846,8 @@ class ParraAPI {
     user_id: string,
     options: Options = {}
   ): Promise<Response> => {
-    return this.http.execute(`${this.options.baseUrl}/v1/users/${user_id}`, {
+    return this.http.execute({
+      path: `${this.options.baseUrl}/v1/users/${user_id}`,
       method: "delete",
       ...options,
     })
@@ -873,7 +857,8 @@ class ParraAPI {
     body: CreateUserRequestBody,
     options: Options = {}
   ): Promise<UserResponse> => {
-    return this.http.execute(`${this.options.baseUrl}/v1/users`, {
+    return this.http.execute({
+      path: `${this.options.baseUrl}/v1/users`,
       method: "post",
       body: JSON.stringify(body),
       headers: {
@@ -890,7 +875,8 @@ class ParraAPI {
     },
     options: Options = {}
   ): Promise<UserCollectionResponse> => {
-    return this.http.execute(`${this.options.baseUrl}/v1/users`, {
+    return this.http.execute({
+      path: `${this.options.baseUrl}/v1/users`,
       method: "get",
       query,
       ...options,
